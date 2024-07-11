@@ -9,9 +9,10 @@ if sys.version_info[0] < 3:
 
 import argparse
 import venv
-from os import makedirs, environ
-from os.path import join, isdir, abspath, dirname
+from os import makedirs, environ, remove
+from os.path import join, isdir, isfile, abspath, dirname
 from subprocess import run, Popen
+from shutil import copyfile
 
 DEV_DIR = abspath(dirname(__file__))
 ROOT_DIR = dirname(DEV_DIR)
@@ -89,8 +90,14 @@ def update_db_schemas():
         with open(join(ROOT_DIR, "database", "model.prisma"), "r") as model:
             out.write(model.read())
 
-    # TS code
-    run_cmd(["npx", "prisma", "generate", "--schema=" + gen_schema], cwd=BKE_WEB_DIR)
+    tmp_schema = join(BKE_WEB_DIR, "schema.prisma")
+    if isfile(tmp_schema):
+        remove(tmp_schema)
+    copyfile(gen_schema, tmp_schema)
+
+    run_cmd(["npx", "prisma", "generate"], cwd=BKE_WEB_DIR)
+
+    remove(tmp_schema)
 
 
 def update_json_schemas():
