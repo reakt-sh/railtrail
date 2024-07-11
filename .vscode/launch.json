@@ -1,0 +1,42 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Positioning Backend",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/positioning/main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/backend/positioning"
+        },
+        {
+            "name": "TS Debugger: Website Backend",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "debug"
+            ],
+            "outputCapture": "std",
+            "cwd": "${workspaceFolder}/backend/website",
+            "console": "integratedTerminal",
+            "timeout": 100000,
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceFolder}/backend/website/dist/**/*.js"
+            ]
+        },
+        {
+            "name": "Angular: Website Frontend",
+            "type": "chrome",
+            "request": "launch",
+            "preLaunchTask": "npm: start",
+            "url": "http://localhost:4200/",
+            "webRoot": "${workspaceFolder}/frontend"
+        }
+    ]
+}

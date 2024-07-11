@@ -1,0 +1,23 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": false,
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "outDir": "./dist",
+    "declaration": false,
+    "module": "commonjs",
+    "target": "es2020",
+    "lib": ["es2020"],
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

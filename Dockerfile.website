@@ -1,0 +1,66 @@
+# Fontend
+FROM node:20-alpine AS fontend-builder
+WORKDIR /build
+
+## Dependencies
+COPY frontend/package.json .
+COPY frontend/package-lock.json .
+RUN npm install-clean --silent
+
+## Data Schema
+COPY ./schema ./schema
+RUN npx json2ts -i ./schema/ -o ./schema-gen/
+
+# Copy frontend code
+COPY frontend .
+
+## Copy Railines
+COPY ./raillines ./src/assets/raillines
+
+## Build
+RUN npm run build
+
+
+# Backend
+FROM node:20-alpine AS backend-builder
+WORKDIR /build
+
+## Dependencies
+COPY backend/website/package.json .
+COPY backend/website/package-lock.json .
+RUN npm install-clean --silent
+
+## Database
+COPY ./database ./db-src
+RUN cat "./db-src/node.prisma" "./db-src/model.prisma" > schema.prisma
+RUN npx prisma generate
+
+## Schema
+COPY ./schema ./schema
+RUN npx json2ts -i ./schema/ -o ./schema-gen/
+
+## Backend code 
+COPY backend/website .
+
+## Build
+RUN npm run build
+
+
+# Runtime
+FROM node:20-alpine
+WORKDIR /app
+
+COPY --from=fontend-builder /build/dist/frontend/browser ./frontend
+COPY --from=backend-builder /build/dist .
+
+COPY backend/website/package.json .
+COPY backend/website/package-lock.json .
+
+RUN npm install-clean --omit=dev --silent
+
+## Database for runtime
+COPY ./database ./db-src
+RUN cat "./db-src/node.prisma" "./db-src/model.prisma" > schema.prisma
+RUN npx prisma generate
+
+CMD node main.js

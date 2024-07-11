@@ -1,0 +1,53 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+// Models
+
+model Vehicle {
+    uid         Int @id @default(autoincrement())
+
+    info        Json // Must satisfy VehicleInfo json schema
+
+    // Implicit relations
+    tracker     Tracker[]
+    rawData     RawData[]
+}
+
+model Tracker {
+    uid         Int @id @default(autoincrement())
+
+    info        Json // Must satisfy TrackerInfo json schema
+
+    vehicleId   Int?
+    vehicle     Vehicle? @relation(fields: [vehicleId], references: [uid])
+
+    // Implicit relations
+    rawData     RawData[]
+}
+
+model RawData {
+    uid         Int @id @default(autoincrement())
+
+    trackerId   Int
+    tracker     Tracker @relation(fields: [trackerId], references: [uid])
+
+    vehicleId   Int?
+    vehicle     Vehicle? @relation(fields: [vehicleId], references: [uid])
+
+    timestamp   DateTime
+    processed   DateTime
+    data        Json // Must satisfy Position json schema
+
+    @@index([timestamp(sort: Desc)])
+}
+
+// Website
+
+model Session {
+  id          String   @id
+  sid         String   @unique
+  data        String
+  expiresAt   DateTime
+}
