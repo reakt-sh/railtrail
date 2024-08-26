@@ -2,7 +2,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://reakt.sh/schema/position.json",
     "title": "Position",
-    "description": "Single position data point produced by a tracking device",
+    "description": "Single position data point produced by a tracking device.",
     "type": "object",
     "additionalProperties": false,
     "required": [

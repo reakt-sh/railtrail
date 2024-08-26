@@ -2,6 +2,13 @@
   "id": "malente-luetjenburg",
   "version": "0.1",
   "name": "Malente-Gremsmühlen-Lütjenburg",
+  "map": {
+    "startConfiguration": {
+      "latitude": 54.16763498392591,
+      "longitude": 10.551193888334025,
+      "zoom": 15
+    }
+  },
   "tracks": [
     {
       "id": "main",

@@ -52,9 +52,8 @@ async def process(pos: Position) -> bool:
     ppos = ParsedPosition(position=pos, timestamp=timestamp, processed=datetime.now(), vehicle=vehicle, tracker=tracker)
     store_tracking_data(ppos)
 
-    # if vehicle is not None:
-        # Project position to track
-    perform_projection(ppos)
+    # Project position to track
+    await perform_projection(ppos)
 
     # TODO Update battery history
 

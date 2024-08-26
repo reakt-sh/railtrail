@@ -7,14 +7,14 @@ if not os.path.isdir("../../dev/.env"):
     load_dotenv(dotenv_path="../../dev/.env")
 
 
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from data.database import connect, disconnect
 from apis import router
 from processing.infrastructure import setup_processing
-
+from processing.notifier import handle_subscription
 
 # Init api
 @asynccontextmanager
@@ -43,6 +43,10 @@ app.add_middleware(
 )
 app.include_router(router)
 
+# Register websocket endpoint
+@app.websocket("/position-updates")
+async def position_updates(ws: WebSocket):
+    await handle_subscription(ws)
 
 # Dev Start
 if __name__ == "__main__":

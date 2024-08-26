@@ -12,7 +12,12 @@ class ParsedPosition(BaseModel):
     vehicle: Optional[Vehicle] = None
 
 class ProjectedPosition(BaseModel):
-    position: Position
     timestamp: datetime
+    vehicle: Optional[Vehicle] = None
+    track: str
+    track_position: float
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    heading: Optional[float] = None
+    raw_position: Position
     created: datetime
-    vehicle: Vehicle

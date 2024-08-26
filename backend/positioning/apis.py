@@ -5,11 +5,12 @@ import os
 from fastapi import APIRouter, Security, Body, HTTPException, status
 from typing import Any
 from auth import get_api_key
-from processing.infrastructure import process_position
 from data.database import synchronize
 from schema_gen.position import Position
+from processing.infrastructure import process_position
 from processing.ttn import convert_ttn_to_position
 from processing.projection import current
+from processing.notifier import _initial_data
 
 router = APIRouter()
 logger = logging.getLogger("app.api")
@@ -57,23 +58,23 @@ async def onboard_tracker(pos: Position, api_key: str = Security(get_api_key)):
     process_position(pos)
 
     # FIXME just testing
-    global _last
-    _last = pos
+    global _last_received
+    _last_received = pos
 
 
-_last = None  # FIXME Just for testing
+_last_received = None  # FIXME Just for testing
 
 
 @router.get("/tracking/test/latest")
 async def latest_data(api_key: str = Security(get_api_key)):
     """FIXME Just for testing"""
-    return _last
+    return _last_received
 
 
-@router.get("/tracking/test/current")
+@router.get("/positions/test/current")
 async def current_data():
     """FIXME Just for testing"""
-    return current
+    return _initial_data
 
 
 ## Route: Administration
