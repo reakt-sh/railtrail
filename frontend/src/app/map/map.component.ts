@@ -37,7 +37,7 @@ export class MapComponent implements OnInit, OnDestroy {
         "maxzoom": 20
       }
     },
-    'glyphs': "http://fonts.openmaptiles.org/{fontstack}/{range}.pbf",
+    'glyphs': "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf", // FIXME
     "layers": [
       {
         "id": "osm",
