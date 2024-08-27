@@ -9,6 +9,7 @@ from processing.infrastructure import store_tracking_data
 from prisma.models import Tracker, Vehicle
 from processing.constants import TTN_DEVICES
 
+_last_processed_timestamp = {}
 
 async def process(pos: Position) -> bool:
     if pos is None:
@@ -29,6 +30,15 @@ async def process(pos: Position) -> bool:
     if tracker is None:
         logger.info("Could not register new tracking device")
         return False
+    
+    # Do not process duplicates
+    tracker_data = tracker_info(tracker)
+    if tracker_data.deviceID in _last_processed_timestamp:
+        last_processed = _last_processed_timestamp[tracker_data.deviceID]
+        if last_processed == timestamp:
+            logger.info("Duplicate position timestamp. Stopping processing of this one.")
+            return True
+    _last_processed_timestamp[tracker_data.deviceID] = timestamp
 
     # Get associated vehicle
     vehicle = _identify_vehicle(pos, tracker)

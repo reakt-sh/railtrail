@@ -32,7 +32,19 @@ with open(os.path.join(os.getenv("SCHEMA_PATH", "./schema"), "position.json")) a
 
 @router.post("/tracking/ttn")
 async def raw_tracker(body: Any = Body(), api_key: str = Security(get_api_key)):
-    pos = convert_ttn_to_position(body)
+    try:
+        pos = convert_ttn_to_position(body)
+    except:
+        logger.info("Error while converting TTN message.")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Malformed payload",
+        )   
+
+    # Mark endpoint
+    if pos.additions is None:
+        pos.additions = {}
+    pos.additions["endpoint"] = "ttn"
 
     # Validate against schema
     try:
@@ -55,6 +67,12 @@ async def raw_tracker(body: Any = Body(), api_key: str = Security(get_api_key)):
 
 @router.post("/tracking/onboard")
 async def onboard_tracker(pos: Position, api_key: str = Security(get_api_key)):
+    # Mark endpoint
+    if pos.additions is None:
+        pos.additions = {}
+    pos.additions["endpoint"] = "onboard"
+
+    # Process
     process_position(pos)
 
     # FIXME just testing
