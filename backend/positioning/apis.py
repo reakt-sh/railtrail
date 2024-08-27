@@ -34,8 +34,8 @@ with open(os.path.join(os.getenv("SCHEMA_PATH", "./schema"), "position.json")) a
 async def raw_tracker(body: Any = Body(), api_key: str = Security(get_api_key)):
     try:
         pos = convert_ttn_to_position(body)
-    except:
-        logger.info("Error while converting TTN message.")
+    except Exception as e:
+        logger.info(f"Error while converting TTN message. Error: {e} Message: {str(body)}")
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Malformed payload",
