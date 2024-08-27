@@ -1,16 +1,16 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import * as turfHelpers from "@turf/helpers";
 import * as turfMeta from "@turf/meta";
-import { Logger } from 'loglevel';
-import { Map } from 'maplibre-gl';
-import { MapPosition } from '../../../../schema-gen/map_position';
-import { RailLine } from '../../../../schema-gen/railline';
-import { LoggingService } from '../../shared/logging.service';
-import { PositionUpdateService } from './position-update.service';
-import { RailLineService } from './rail-line.service';
+import { Logger } from "loglevel";
+import { Map } from "maplibre-gl";
+import { MapPosition } from "../../../../schema-gen/map_position";
+import { RailLine } from "../../../../schema-gen/railline";
+import { LoggingService } from "../../shared/logging.service";
+import { PositionUpdateService } from "./position-update.service";
+import { RailLineService } from "./rail-line.service";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class MapLogicService {
   private readonly logger: Logger;
@@ -65,44 +65,46 @@ export class MapLogicService {
       const lineStringData: GeoJSON.Feature<GeoJSON.LineString> = turfHelpers.lineString(turfMeta.coordAll(trackData))
 
       map.addSource(track.id, {
-        'type': 'geojson',
-        'data': lineStringData
+        "type": "geojson",
+        "data": lineStringData
       });
 
       map.addLayer({
-        'id': track.id,
-        'type': 'line',
-        'source': track.id,
-        'layout': {
-          'line-join': 'round',
-          'line-cap': 'round'
+        "id": track.id,
+        "type": "line",
+        "source": track.id,
+        "layout": {
+          "line-join": "round",
+          "line-cap": "round"
         },
-        'paint': {
-          'line-color': '#a03472',
-          'line-width': 6
+        "paint": {
+          "line-color": "#a03472",
+          "line-width": 6
         }
       });
     }
   }
 
   private initVehicles(map: Map) {
-    map.addSource('vehicles', {
-      'type': 'geojson',
-      'data': {
-        'type': 'FeatureCollection',
-        'features': []
+    map.addSource("vehicles", {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": []
       }
     });
 
     map.addLayer({
-      'id': 'vehicles',
-      'type': 'symbol',
-      'source': 'vehicles',
-      'layout': {
-        'text-field': ['get', 'description'],
-        'text-justify': 'center',
-        'icon-image': ['get', 'icon'],
-        'icon-size': 0.5
+      "id": "vehicles",
+      "type": "symbol",
+      "source": "vehicles",
+      "layout": {
+        "text-field": ["get", "description"],
+        "text-justify": "center",
+        "text-allow-overlap": true,
+        "icon-image": ["get", "icon"],
+        "icon-size": 0.5,
+        "icon-allow-overlap": true
       }
     } as any);
   }
@@ -115,23 +117,23 @@ export class MapLogicService {
   refreshVehiclePositions() {
     if (this.map) {
       let data = {
-        'type': 'FeatureCollection',
-        'features': Object.entries(this.vehiclePositions).map(([_, pos]) => {
+        "type": "FeatureCollection",
+        "features": Object.entries(this.vehiclePositions).map(([_, pos]) => {
           return {
-            'type': 'Feature',
-            'properties': {
-              'description': pos.label,
-              'icon': 'railvehicle'
+            "type": "Feature",
+            "properties": {
+              "description": pos.label,
+              "icon": "railvehicle"
             },
-            'geometry': {
-              'type': 'Point',
-              'coordinates': [pos.longitude, pos.latitude]
+            "geometry": {
+              "type": "Point",
+              "coordinates": [pos.longitude, pos.latitude]
             }
           }
         })
       };
       this.logger.debug("New vehicle layer", data);
-      (this.map.getSource('vehicles') as any).setData(data);
+      (this.map.getSource("vehicles") as any).setData(data);
     }
   }
 }
