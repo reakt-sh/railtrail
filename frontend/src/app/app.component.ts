@@ -4,14 +4,14 @@ import { MatToolbar } from '@angular/material/toolbar';
 import { MatSidenav, MatSidenavContainer } from '@angular/material/sidenav';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { LayoutService } from './shared/layout.service';
-import { SharedModule } from './shared/shared.module';
+import { MyMaterialModule } from './shared/my-material.module';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     RouterOutlet,
-    SharedModule,
+    MyMaterialModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'

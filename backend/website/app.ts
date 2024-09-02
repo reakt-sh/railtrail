@@ -1,19 +1,16 @@
+import { PrismaClient } from "@prisma/client";
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import compression from "compression";
-import debug from "debug";
 import errorHandler from "errorhandler";
 import express from "express";
 import session from "express-session";
+import fs from "fs";
 import helmet from "helmet";
 import passport from "passport";
 import path from "path";
-import fs from "fs";
-import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import apiRouter, { loadAPI } from "./api";
+import { authOperatorGuard, initTestingAuthentication, testingAuthenticationID } from "./auth";
 import { config } from "./config";
-import { PrismaClient } from '@prisma/client'
-
-
-// Logging
-const log = debug("app");
 
 // Create Express server
 const app = express();
@@ -65,17 +62,10 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-// Attach userID when authenticated
-passport.serializeUser((user: any, done) => { // FIXME Type
-  done(null, user.id);
-});
-
-// Extend incoming messages by userID
-passport.deserializeUser((userId: number, done) => {
-  // Requesting the full user each time is far to slow
-  done(null, userId);
-});
+// Init authentication strategy
+// TODO Add support for OAuth
+// FIXME Authentication just for testing
+initTestingAuthentication()
 
 
 // -----------
@@ -84,6 +74,28 @@ passport.deserializeUser((userId: number, done) => {
 
 // Static distribution directories
 const frontendPath = config.debug ? "../../../frontend/dist/frontend/browser" : "./frontend";
+
+// Route for just checking authentication
+app.get('/api/auth', authOperatorGuard, (req, res) => {
+  res.send(req.user).end(); // Return role FIXME improve
+});
+
+// Route for logout
+app.get('/api/auth/logout', (req, res) => {
+  req.logout(() => res.status(200).end());
+});
+
+// Route for login
+app.post('/api/auth/login-role', (req, res, next) => {
+  passport.authenticate(testingAuthenticationID, (err: any, user: any, info: any, status: any) => {
+    if (user) {
+      return res.send(user).end();
+    } else {
+      res.status(401).end()
+    }
+  })(req, res, next)
+}); // TODO Change when proper authentication is in place
+
 
 // Static angular routes
 // PUBLIC -> no authGuard

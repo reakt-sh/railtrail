@@ -133,16 +133,19 @@ def update_schemas():
 
 
 def start_all():
+    print("# Starting database")
+    run_cmd(["docker", "compose", "up", "-d"], cwd=DEV_DIR)
+
     print("# Building frontend")
     run_cmd(["npm", "run", "debug-build"], cwd=FTE_DIR)
 
     print("# Building website backend")
     run_cmd(["npm", "run", "build"], cwd=BKE_WEB_DIR)
 
-    print("# Running server and database")
+    print("# Running server")
     db = pos = web = None
     try:
-        db = Popen(["docker", "compose", "up"], cwd=DEV_DIR)
+        # db = Popen(["docker", "compose", "up"], cwd=DEV_DIR)
         pos = Popen(
             ["python", "main.py"],
             cwd=BKE_POS_DIR,
@@ -151,7 +154,7 @@ def start_all():
         web = Popen(["npm", "run", "start"], cwd=BKE_WEB_DIR)
 
         # Wait for any to block
-        db.wait()
+        pos.wait()
     except KeyboardInterrupt as ki:
         if db:
             db.terminate()
