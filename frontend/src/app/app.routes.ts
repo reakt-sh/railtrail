@@ -22,19 +22,11 @@ export const routes: Routes = [
     component: AdminComponent,
     canActivate: [AdminAuthGuard]
   },
-    {
-      path: 'map',
-      component: MapComponent,
-    },
-    {
-      path: '',
-      redirectTo: '/map',
-      pathMatch: 'full'
-    },
-    {
-      path: '**',
-      redirectTo: '/map',
-    }
+  {
+    path: 'admin/vehicles',
+    component: VehiclesComponent,
+    canActivate: [AdminAuthGuard]
+  },
   // Map
   {
     path: 'map',

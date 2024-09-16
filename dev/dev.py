@@ -121,10 +121,10 @@ def update_json_schemas():
 
     # TS code
     print("## Updating TypeScript data schemas for backend")
-    run_cmd(["npx", "json2ts", "-i", DATA_SCHEMA_DIR, "-o", join(BKE_WEB_DIR, "schema-gen")], cwd=BKE_WEB_DIR)
+    run_cmd(["npx", "json2ts", "-i", DATA_SCHEMA_DIR, "-o", join(BKE_WEB_DIR, "schema-gen"), "--cwd", DATA_SCHEMA_DIR, "--enableConstEnums", "true"], cwd=BKE_WEB_DIR)
 
     print("## Updating TypeScript data schemas for frontend")
-    run_cmd(["npx", "json2ts", "-i", DATA_SCHEMA_DIR, "-o", join(FTE_DIR, "schema-gen")], cwd=FTE_DIR)
+    run_cmd(["npx", "json2ts", "-i", DATA_SCHEMA_DIR, "-o", join(FTE_DIR, "schema-gen"), "--cwd", DATA_SCHEMA_DIR, "--enableConstEnums", "true"], cwd=FTE_DIR)
 
 
 def update_schemas():

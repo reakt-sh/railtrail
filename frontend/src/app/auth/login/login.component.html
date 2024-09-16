@@ -3,9 +3,10 @@
 	<span *ngIf="logout" i18n>Successfully logged out.</span>
 	<mat-form-field appearance="outline" (onsubmit)="sendLogin()">
     <mat-label i18n>Password</mat-label>
-    <input matInput 
+    <input matInput
 			[formControl]="passwordForm"
       (blur)="updateErrorMessage()"
+      (keyup.enter)="sendLogin()"
 			[type]="hide() ? 'password' : 'text'"
       required />
     <button
@@ -23,16 +24,16 @@
   </mat-form-field>
 	<div class="buttons">
 		<div>
-			<mat-button-toggle-group 
-					i18n-name name="Role" 
+			<mat-button-toggle-group
+					i18n-name name="Role"
 					#btnGroup="matButtonToggleGroup"
-					(change)="selectedRole = btnGroup.value" 
+					(change)="selectedRole = btnGroup.value"
 					[value]="selectedRole">
 					<mat-button-toggle i18n [value]="roles.Operator">Operator</mat-button-toggle>
 				<mat-button-toggle i18n [value]="roles.Admin">Admin</mat-button-toggle>
 			</mat-button-toggle-group>
 		</div>
-		<button i18n mat-stroked-button (click)="sendLogin()"><strong>Log in</strong></button>
+		<button i18n mat-stroked-button class="login-btn" (click)="sendLogin()">Log in</button>
 	</div>
 	<span *ngIf="failed()" class="error" i18n>Login failed.</span>
 </div>

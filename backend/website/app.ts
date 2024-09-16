@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import compression from "compression";
 import errorHandler from "errorhandler";
@@ -11,14 +10,22 @@ import path from "path";
 import apiRouter, { loadAPI } from "./api";
 import { authOperatorGuard, initTestingAuthentication, testingAuthenticationID } from "./auth";
 import { config } from "./config";
+import { db } from "./db";
+import { loadSchemas } from "./validate";
+import log from 'loglevel';
+
+// Configure logger
+if (config.debug) {
+  log.setLevel(log.levels.DEBUG);
+}
 
 // Create Express server
 const app = express();
 
 // Setup DB connection
-const prisma = new PrismaClient()
+const prisma = db;
 
-// Prepare session store
+// Prepare session store in DB
 const sessionStore = new PrismaSessionStore(
   prisma,
   config.sessionStore
@@ -65,8 +72,11 @@ app.use(passport.session());
 // Init authentication strategy
 // TODO Add support for OAuth
 // FIXME Authentication just for testing
-initTestingAuthentication()
+initTestingAuthentication();
 
+
+// Load Payload validator
+loadSchemas();
 
 // -----------
 // - ROUTING -
@@ -89,13 +99,27 @@ app.get('/api/auth/logout', (req, res) => {
 app.post('/api/auth/login-role', (req, res, next) => {
   passport.authenticate(testingAuthenticationID, (err: any, user: any, info: any, status: any) => {
     if (user) {
-      return res.send(user).end();
+      req.logIn(user, (err) => {
+        if (err) {
+          log.error("Error during user log in processing.", err)
+          res.status(500).end();
+        } else {
+          res.send(user).end();
+        }
+      });
     } else {
-      res.status(401).end()
+      res.status(401).end();
     }
   })(req, res, next)
 }); // TODO Change when proper authentication is in place
 
+// Primary api routes.
+loadAPI();
+app.use('/api', apiRouter);
+// Fail for other api routes
+app.all('/api/*', authOperatorGuard, (req, res, next) => {
+  res.status(404).end();
+});
 
 // Static angular routes
 // PUBLIC -> no authGuard

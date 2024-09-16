@@ -1,76 +1,76 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://reakt.sh/schema/position.json",
-    "title": "Position",
-    "description": "Single position data point produced by a tracking device.",
-    "type": "object",
-    "additionalProperties": false,
-    "required": [
-        "timestamp",
-        "latitude",
-        "longitude",
-        "deviceID"
-    ],
-    "properties": {
-        "timestamp": {
-            "type": "string",
-            "description": "Timestamp for the given position data in ISO 8601 format."
-        },
-        "latitude": {
-            "type": "number",
-            "description": "Latitude in degrees.",
-            "minimum": -90,
-            "maximum": 90
-        },
-        "longitude": {
-            "type": "number",
-            "description": "Longitude in degrees.",
-            "minimum": -180,
-            "maximum": 180
-        },
-        "heading": {
-            "type": "number",
-            "description": "[Optional] Heading in degrees."
-        },
-        "speed": {
-            "type": "number",
-            "description": "[Optional] Speed in km/h."
-        },
-        "fixFailed": {
-            "type": "boolean",
-            "description": "[Optional] Indicates that no position data could be acquired at the given time and the included data may be a cached position or invalid."
-        },
-        "heartbeat": {
-            "type": "boolean",
-            "description": "[Optional] Indicates that this position relates to a scheduled heartbeat and not a movement event. Inverse to 'inTrip' produced by Qyster devices. "
-        },
-        "batteryV": {
-            "type": "number",
-            "description": "[Optional] Battery voltage of the device."
-        },
-        "deviceType": {
-            "type": "string",
-            "description": "[Optional] The type of the sending device."
-        },
-        "deviceID": {
-            "type": "string",
-            "description": "Unique identifier for the sending device."
-        },
-        "vehicle": {
-            "type": "string",
-            "description": "[Optional] Association with a vehicle."
-        },
-        "original": {
-            "type": "object",
-            "additionalProperties": true,
-            "properties": {},
-            "description": "[Optional] The original message sent by the device. No schema requirements."
-        },
-        "additions": {
-            "type": "object",
-            "additionalProperties": true,
-            "properties": {},
-            "description": "[Optional] Additional information. No schema requirements."
-        }
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reakt.sh/schema/position.json",
+  "title": "Position",
+  "description": "Single position data point produced by a tracking device.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "timestamp",
+    "latitude",
+    "longitude",
+    "deviceID"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "description": "Timestamp for the given position data in ISO 8601 format."
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Latitude in degrees.",
+      "minimum": -90,
+      "maximum": 90
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Longitude in degrees.",
+      "minimum": -180,
+      "maximum": 180
+    },
+    "heading": {
+      "type": "number",
+      "description": "[Optional] Heading in degrees."
+    },
+    "speed": {
+      "type": "number",
+      "description": "[Optional] Speed in km/h."
+    },
+    "fixFailed": {
+      "type": "boolean",
+      "description": "[Optional] Indicates that no position data could be acquired at the given time and the included data may be a cached position or invalid."
+    },
+    "heartbeat": {
+      "type": "boolean",
+      "description": "[Optional] Indicates that this position relates to a scheduled heartbeat and not a movement event. Inverse to 'inTrip' produced by Qyster devices. "
+    },
+    "batteryV": {
+      "type": "number",
+      "description": "[Optional] Battery voltage of the device."
+    },
+    "deviceType": {
+      "type": "string",
+      "description": "[Optional] The type of the sending device."
+    },
+    "deviceID": {
+      "type": "string",
+      "description": "Unique identifier for the sending device."
+    },
+    "vehicle": {
+      "type": "string",
+      "description": "[Optional] Association with a vehicle."
+    },
+    "original": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {},
+      "description": "[Optional] The original message sent by the device. No schema requirements."
+    },
+    "additions": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {},
+      "description": "[Optional] Additional information. No schema requirements."
     }
+  }
 }

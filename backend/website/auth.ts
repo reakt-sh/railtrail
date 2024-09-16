@@ -13,13 +13,19 @@ export enum AuthRole {
 
 // Simple middleware to ensure user is authenticated.
 
+/**
+ * Only lets users logged in as admins pass.
+ */
 export function authOperatorGuard(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated() && (req.user as any).role === AuthRole.Operator) {
+  if (req.isAuthenticated() && ((req.user as any).role === AuthRole.Operator || (req.user as any).role === AuthRole.Admin)) {
     return next();
   }
   res.status(403).end();
 }
 
+/**
+ * Only lets users logged in as admins pass.
+ */
 export function authAdminGuard(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated() && (req.user as any).role === AuthRole.Admin) {
     return next();
@@ -30,6 +36,9 @@ export function authAdminGuard(req: Request, res: Response, next: NextFunction) 
 // FIXME Authentication just for testing
 export var testingAuthenticationID:string = 'local';
 
+/**
+ * Registers the authentication strategy.
+ */
 export function initTestingAuthentication() {
   const s = new Strategy((username, password, done) => {
     logger.debug("New log in", username, password);
@@ -55,7 +64,7 @@ export function initTestingAuthentication() {
       }
       default:
         done(null, false);
-        break  
+        break;
     }
   });
   passport.use(s);

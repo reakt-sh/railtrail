@@ -44,6 +44,12 @@ export class AuthService {
         this.logger.debug("Redirecting to login page.");
       }
     });
+
+    // Ease development
+    // if (isDevMode()) {
+    //   this.logger.info('Detected client-only debug mode. Simulating successful authentication.');
+    //   this.loggedInAs.next({role: AuthRole.Admin});
+    // }
   }
 
   public isLoggedIn(): boolean {
@@ -108,10 +114,6 @@ export class AuthService {
         return false;
       }),
       catchError((err) => { // Not logged in
-        if (isDevMode() && err && 'status' in err && err.status === 404) {
-          this.logger.info('Detected client-only debug mode. Simulating successful log in.');
-          return of(true);
-        }
         this.logger.debug("Not yet authenticated");
         this.loggedInAs.next(undefined);
         return of(false);

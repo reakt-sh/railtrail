@@ -3,21 +3,25 @@
   flex-direction: column;
 
   margin: 2% 10% 5% 10%;
+}
 
-  h1 {
-    text-align: center;
-  }
+h1 {
+  text-align: center;
+}
 
-  .buttons {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin: 10px 0;
-  }
+.buttons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 10px 0;
+}
 
-  .error {
-    font-weight: bold;
-    color: var(--mat-form-field-error-text-color, var(--mat-app-error));
-  }
+.error {
+  font-weight: bold;
+  color: var(--mat-form-field-error-text-color, var(--mat-app-error));
+}
+
+.login-btn {
+  font-weight: bold;
 }

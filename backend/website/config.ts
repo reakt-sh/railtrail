@@ -16,7 +16,7 @@ export class Config {
   };
   readonly session = {
     resave: true,
-    saveUninitialized: true,
+    saveUninitialized: false, // only store after login
     secret: env.get("SESSION_SECRET").required().asString(), // Always change for production!
     name: "sessionID"
   };
@@ -25,6 +25,9 @@ export class Config {
     dbRecordIdIsSessionId: true,
     dbRecordIdFunction: undefined,
   };
+  readonly positioningApiHost = env.get("POS_API_HOST").required().asString();
+  readonly positioningApiPort = env.get("POS_API_PORT").required().asString();
+  readonly positioningApiKey = env.get("POS_API_KEY").required().asString();
 }
 
 const init = function () {

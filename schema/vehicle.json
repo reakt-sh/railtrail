@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reakt.sh/schema/vehicle.json",
+  "title": "VehicleInfo",
+  "description": "Information regarding a vehicle.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "label"
+  ],
+  "properties": {
+    "label": {
+      "type": "string",
+      "description": "A short label identifying the vehicle, e.g. V1."
+    },
+    "description": {
+      "type": "string",
+      "description": "The vehicle description."
+    }
+  }
+}
