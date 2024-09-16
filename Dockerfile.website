@@ -9,7 +9,7 @@ RUN npm install-clean --silent
 
 ## Data Schema
 COPY ./schema ./schema
-RUN npx json2ts -i ./schema/ -o ./schema-gen/
+RUN npx json2ts -i ./schema/ -o ./schema-gen/ --cwd ./schema/ --enableConstEnums true
 
 # Copy frontend code
 COPY frontend .
@@ -37,9 +37,9 @@ RUN npx prisma generate
 
 ## Schema
 COPY ./schema ./schema
-RUN npx json2ts -i ./schema/ -o ./schema-gen/
+RUN npx json2ts -i ./schema/ -o ./schema-gen/ --cwd ./schema/ --enableConstEnums true
 
-## Backend code 
+## Backend code
 COPY backend/website .
 
 ## Build
@@ -57,6 +57,9 @@ COPY backend/website/package.json .
 COPY backend/website/package-lock.json .
 
 RUN npm install-clean --omit=dev --silent
+
+## Schema for runtime validation
+COPY ./schema ./schema
 
 ## Database for runtime
 COPY ./database ./db-src
