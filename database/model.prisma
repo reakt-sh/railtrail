@@ -13,6 +13,7 @@ model Vehicle {
   // Implicit relations
   tracker     Tracker[]
   rawData     RawData[]
+  analyses    Analysis[]
 }
 
 model Tracker {
@@ -40,7 +41,36 @@ model RawData {
   processed   DateTime
   data        Json // Must satisfy Position json schema
 
+  // Implicit relations
+  analyses    AnalysisSource[]
+
   @@index([timestamp(sort: Desc)])
+}
+
+model Analysis {
+  uid         Int @id @default(autoincrement())
+
+  vehicleId   Int?
+  vehicle     Vehicle? @relation(fields: [vehicleId], references: [uid])
+
+  timestamp   DateTime
+  obsolete    Boolean @default(false)
+  data        Json // Must satisfy AnalysisInfo json schema
+
+  // Implicit relations
+  sources     AnalysisSource[]
+
+  @@index([timestamp(sort: Desc)])
+}
+
+model AnalysisSource {
+  @@id([analysisId, dataId])
+
+  analysisId  Int
+  analysis    Analysis @relation(fields: [analysisId], references: [uid])
+
+  dataId      Int
+  data        RawData @relation(fields: [dataId], references: [uid])
 }
 
 // Website

@@ -1,14 +1,28 @@
 import re
+import traceback
 from typing import Dict, cast
 from prisma import Json
 from prisma.models import Tracker, Vehicle
+from pydantic import ValidationError
 from schema_gen.tracker import TrackerInfo
 from schema_gen.position import Position
 from prisma.types import TrackerCreateInput
+from data import logger as parent_logger
+
+
+logger = parent_logger.getChild("analysis")
 
 _tracker_cache: Dict[str, Tracker] = {}
 _tracker_info_cache: Dict[str, TrackerInfo] = {}
 _vehicle_map: Dict[str, Vehicle] = {}
+
+
+def all_trackers():
+    return _tracker_cache.values()
+
+
+def all_vehicles():
+    return _vehicle_map.values()
 
 
 def get_tracker(deviceID: str, deviceType: str | None) -> Tracker | None:
@@ -58,6 +72,13 @@ async def register_tracker(message: Position) -> Tracker:
     return tracker
 
 
+def find_vehicle_by_id(trackerID: str) -> Vehicle | None:
+    """Get the vehicle via device id of associated tracker"""
+    if trackerID in _vehicle_map:
+        return _vehicle_map[trackerID]
+    return None
+
+
 async def sync_trackers():
     """Retrieve tracker and vehicle data from the database and update caches"""
     trackers = await Tracker.prisma().find_many(include={"vehicle": True})
@@ -72,15 +93,24 @@ async def sync_trackers():
 
     # Update caches
     for tracker in trackers:
-        info = TrackerInfo.model_validate(tracker.info)
-        _tracker_cache[info.deviceID] = tracker
-        _tracker_info_cache[info.deviceID] = info
+        try:
+            info = TrackerInfo.model_validate(tracker.info)
+            _tracker_cache[info.deviceID] = tracker
+            _tracker_info_cache[info.deviceID] = info
 
-        if info.devEUI:
-            _tracker_cache[info.devEUI] = tracker
-            _tracker_info_cache[info.devEUI] = info
-
-        if tracker.vehicle is not None:
-            _vehicle_map[info.deviceID] = tracker.vehicle
             if info.devEUI:
-                _vehicle_map[info.devEUI] = tracker.vehicle
+                _tracker_cache[info.devEUI] = tracker
+                _tracker_info_cache[info.devEUI] = info
+
+            if tracker.vehicle is not None:
+                _vehicle_map[info.deviceID] = tracker.vehicle
+                if info.devEUI:
+                    _vehicle_map[info.devEUI] = tracker.vehicle
+        except ValidationError as ve:
+            logger.error("Tracker record (%d) in database contains invalid data object: %s", tracker.uid, ve)
+            traceback.print_exc()
+    logger.info(
+        "Synchronized %d trackers associated with %d vehicles",
+        len(_tracker_cache.values()),
+        len(set(map(lambda v: v.uid, _vehicle_map.values()))),
+    )

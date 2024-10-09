@@ -51,6 +51,10 @@
     "label": {
       "type": "string",
       "description": "[Optional] A label to display."
+    },
+    "offtrack": {
+      "type": "boolean",
+      "description": "[Optional] True indicated that the vehicle is not on the track and the position should be ignored and the coordinates will provide the intended positions on the map."
     }
   }
 }

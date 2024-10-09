@@ -12,7 +12,8 @@ import venv
 from os import makedirs, environ, remove
 from os.path import join, isdir, isfile, abspath, dirname
 from subprocess import run, Popen
-from shutil import copyfile
+from shutil import copyfile, copytree, rmtree
+from dotenv import load_dotenv
 
 DEV_DIR = abspath(dirname(__file__))
 ROOT_DIR = dirname(DEV_DIR)
@@ -176,6 +177,39 @@ def deploy_android():
     run_cmd(["npx", "cap", "build", "android"], cwd=FTE_DIR)
 
 
+def db_migrate():
+    gen_dir = join(DEV_DIR, "gen", "python")
+    migrations_dir = join(gen_dir, "migrations")
+
+    # Ensure precondition
+    print("# Updating schema")
+    update_db_schemas()
+
+    print("# Creating DB migration")
+
+    # Clear generated files
+    if isdir(migrations_dir):
+        rmtree(migrations_dir)
+
+    # Copy migration rules
+    copytree(join(DB_SCHEMA_DIR, "migrations"), migrations_dir, dirs_exist_ok=True)
+
+    # Apply developer env
+    load_dotenv(dotenv_path=join(DEV_DIR, ".env"))
+
+    # Generate
+    print("## Generating migration file")
+    run_cmd(
+        [join(BKE_POS_VENV_DIR, "bin", "prisma"), "migrate", "dev"],
+        cwd=gen_dir,
+        env=dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
+    )
+
+    # Copy result
+    print("## Copy new migration")
+    copytree(migrations_dir, join(DB_SCHEMA_DIR, "migrations"), dirs_exist_ok=True)
+
+
 ### Util ###
 
 def run_cmd(cmd, check=True, **kwargs):
@@ -195,8 +229,8 @@ ACTIONS = {
     "update-data": update_json_schemas,
     "update": update_schemas,
     "start": start_all,
-    "deploy-android": deploy_android
-    # TODO add prisma migrate dev capabilities
+    "deploy-android": deploy_android,
+    "migrate": db_migrate
 }
 
 if __name__ == "__main__":

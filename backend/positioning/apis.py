@@ -9,7 +9,6 @@ from data.database import synchronize
 from schema_gen.position import Position
 from processing.infrastructure import process_position
 from processing.ttn import convert_ttn_to_position
-from processing.projection import current
 from processing.notifier import _initial_data
 
 router = APIRouter()
@@ -39,7 +38,7 @@ async def raw_tracker(body: Any = Body(), api_key: str = Security(get_api_key)):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Malformed payload",
-        )   
+        )
 
     # Mark endpoint
     if pos.additions is None:

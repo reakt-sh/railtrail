@@ -1,4 +1,5 @@
 generator js {
   provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
 }
 

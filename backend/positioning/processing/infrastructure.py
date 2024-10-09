@@ -2,7 +2,7 @@ import os
 import asyncio
 import traceback
 from schema_gen.position import Position
-from processing.custom_positions import ParsedPosition
+from processing.custom_types import AnalysisData, ParsedPosition
 from processing import logger
 
 
@@ -24,19 +24,20 @@ def process_position(pos: Position):
         logger.warning("Dropped position data because of high load in queue!")
 
 
-def store_tracking_data(ppos: ParsedPosition):
+def store_data(data):
     """Add a new data record to the storage queue"""
     global _writeback_queue
     try:
-        _writeback_queue.put_nowait(ppos)
+        _writeback_queue.put_nowait(data)
     except asyncio.QueueFull:
-        logger.warning("Dropped parsed position data because of high load in queue!")
+        logger.warning("Dropped data because of high load in writeback queue!")
 
 
 ### INTERNAL
 
 from processing.process import process
 from data.positions import store_raw_data
+from data.analyses import store_analysis
 
 _workers = set()
 _processing_queue = asyncio.Queue(maxsize=1000)
@@ -61,6 +62,8 @@ async def _writeback_loop():
         try:
             if isinstance(data, ParsedPosition):
                 await store_raw_data(data)
+            if isinstance(data, AnalysisData):
+                await store_analysis(data)
             else:
                 logger.warning("Discarded writeback data because of unknown type: %s", type(data))
         except Exception:

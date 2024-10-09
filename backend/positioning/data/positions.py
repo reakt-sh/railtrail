@@ -1,6 +1,6 @@
 from prisma.models import RawData
 from prisma import Json
-from processing.custom_positions import ParsedPosition
+from processing.custom_types import ParsedPosition
 from prisma.types import RawDataCreateInput
 
 async def store_raw_data(ppos: ParsedPosition):
@@ -14,4 +14,6 @@ async def store_raw_data(ppos: ParsedPosition):
     if ppos.vehicle is not None:
         entry["vehicleId"] = ppos.vehicle.uid
 
-    await RawData.prisma().create(entry)
+    # Save
+    db_entry = await RawData.prisma().create(entry)
+    ppos.dbID = db_entry.uid

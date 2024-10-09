@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://reakt.sh/schema/analysis.json",
+  "title": "AnalysisInfo",
+  "description": "Real-world position that is projected onto a track.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "timestamp"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "description": "Timestamp of the analysis in ISO 8601 format."
+    },
+    "processingTime": {
+      "type": "number",
+      "description": "The time used to produce the analysis in sec."
+    },
+    "mapPosition": {
+      "$ref": "map_position.json"
+    }
+  }
+}

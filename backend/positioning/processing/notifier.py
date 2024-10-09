@@ -1,9 +1,9 @@
 from asyncio import Queue, QueueFull
 from fastapi import WebSocket, WebSocketDisconnect
-from processing.custom_positions import ProjectedPosition
+from data.analyses import retrieve_latest_analysis_per_vehicle
+from processing.custom_types import AnalysisData
 from processing import logger as parent_logger
 from traceback import print_exc
-from schema_gen.map_position import MapPosition
 
 logger = parent_logger.getChild("notifier")
 
@@ -36,51 +36,44 @@ async def handle_subscription(websocket: WebSocket):
         _update_queues.remove(queue)
 
 
-async def notify_subscribers(pos: ProjectedPosition):
-    # Create notification
-    map_pos = _convert_to_notification(pos)
+async def notify_subscribers(ana: AnalysisData):
+    if ana.map_pos:
+      # Convert to Json
+      data = ana.map_pos.model_dump(exclude_unset=True, exclude_defaults=True)
 
-    # Convert to Json
-    data = map_pos.model_dump(exclude_unset=True, exclude_defaults=True)
+      # Store new position in initial state for new connections
+      global _initial_data
+      _initial_data[ana.map_pos.vehicle] = data
 
-    # Store new position in initial state for new connections
-    global _initial_data
-    _initial_data[map_pos.vehicle] = data
-
-    # Push data to all update queues
-    for q in _update_queues:
-        try:
-            q.put_nowait(data)
-        except QueueFull:
-            logger.warning("Dropped map position data because of high load in update queue!")
+      # Push data to all update queues
+      for q in _update_queues:
+          try:
+              q.put_nowait(data)
+          except QueueFull:
+              logger.warning("Dropped map position data because of high load in update queue!")
+    else:
+        logger.warning("Given AnalysisData does not contain a MapPosition!")
 
 
 async def sync_initial_positions():
-    data = {}
+    new_data = {}
 
-    # TODO implement
-    # Pull latest projected positions from database
+    records = await retrieve_latest_analysis_per_vehicle()
+    for vehicle, analysis in records:
+        if analysis.mapPosition:
+          # Update label in case of recent changes
+          if "label" in vehicle.info:
+              analysis.mapPosition.label = str(vehicle.info["label"])
+
+          new_data[vehicle.uid] = analysis.mapPosition.model_dump(exclude_unset=True, exclude_defaults=True)
 
     # Set new state
     global _initial_data
-    _initial_data = data
+    _initial_data = new_data
+    logger.info("Loaded %d map positions for vehicles", len(new_data.values()))
 
 
 ### INTERNAL
 
 _update_queues = []
 _initial_data = {}
-
-
-def _convert_to_notification(ppos: ProjectedPosition) -> MapPosition:
-    return MapPosition(
-        timestamp=ppos.timestamp.isoformat(),
-        vehicle=ppos.vehicle.uid if ppos.vehicle is not None else hash(ppos.raw_position.deviceID),
-        track=ppos.track,
-        position=ppos.track_position,
-        heading=ppos.heading,
-        speed=ppos.raw_position.speed,
-        latitude=ppos.latitude,
-        longitude=ppos.longitude,
-        label=str(ppos.vehicle.info["label"] if ppos.vehicle is not None else ppos.raw_position.deviceID),
-    )

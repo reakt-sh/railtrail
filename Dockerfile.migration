@@ -1,0 +1,15 @@
+FROM node:20-alpine
+WORKDIR /app
+
+# Dependencies
+COPY ./backend/website/package.json .
+RUN npm install prisma@$(node -pe "require('./package').devDependencies.prisma")
+
+# Schema
+COPY ./database/model.prisma ./schema.prisma
+
+# Migration data
+COPY ./database/migrations ./migrations
+
+# Perform migration
+CMD npx prisma migrate deploy
