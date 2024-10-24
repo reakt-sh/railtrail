@@ -38,7 +38,7 @@ async def perform_projection(ppos: ParsedPosition, ana: AnalysisData):
     )
     ana.map_pos = MapPosition(
         timestamp=ppos.timestamp.isoformat(),
-        vehicle=ppos.vehicle.uid if ppos.vehicle is not None else hash(ppos.position.deviceID),
+        vehicle=ppos.vehicle.uid if ppos.vehicle is not None else -abs(hash(ppos.position.deviceID)),
         track=track_id,
         position=nearest_point_on_line,
         heading=ppos.position.heading, # FIXME normalize for track and speed

@@ -18,7 +18,7 @@
     },
     "vehicle": {
       "type": "integer",
-      "description": "The vehicle ID associated with this position."
+      "description": "The vehicle ID associated with this position. Positive IDs indicate valid association with a vehicle, negative ones represent a unique ID for a position send by a tracker not associated with a vehicle."
     },
     "position": {
       "type": "number",
