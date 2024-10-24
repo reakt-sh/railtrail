@@ -62,7 +62,7 @@ async def _writeback_loop():
         try:
             if isinstance(data, ParsedPosition):
                 await store_raw_data(data)
-            if isinstance(data, AnalysisData):
+            elif isinstance(data, AnalysisData):
                 await store_analysis(data)
             else:
                 logger.warning("Discarded writeback data because of unknown type: %s", type(data))
