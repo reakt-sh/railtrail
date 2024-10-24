@@ -7,13 +7,16 @@ from processing.projection import perform_projection
 from processing.custom_types import AnalysisData, ParsedPosition
 from processing.infrastructure import store_data
 from prisma.models import Tracker, Vehicle
-from processing.constants import TTN_DEVICES
+from processing.constants import *
 
-_last_processed_timestamp = {}
+_last_processed: dict[str, ParsedPosition] = {}
 
 async def process(pos: Position) -> bool:
     if pos is None:
         return False
+
+    # Unify IDs
+    pos.deviceID = pos.deviceID.upper()
 
     # Check if timestamp is parsable
     try:
@@ -31,14 +34,13 @@ async def process(pos: Position) -> bool:
         logger.info("Could not register new tracking device")
         return False
 
-    # Do not process duplicates
+    # Do not process duplicates (same position received via multiple end points)
     tracker_data = tracker_info(tracker)
-    if tracker_data.deviceID in _last_processed_timestamp:
-        last_processed = _last_processed_timestamp[tracker_data.deviceID]
-        if last_processed == timestamp:
-            logger.info("Duplicate position timestamp. Stopping processing of this one.")
+    if tracker_data.deviceID in _last_processed:
+        last_processed = _last_processed[tracker_data.deviceID]
+        if (timestamp - last_processed.timestamp).total_seconds() < DROP_DUPLICATE_POSITION_TIMESPAN and pos.latitude == last_processed.position.latitude and pos.longitude == last_processed.position.longitude and pos.additions and ENDPOINT_KEY in pos.additions and last_processed.position.additions and ENDPOINT_KEY in last_processed.position.additions and last_processed.position.additions[ENDPOINT_KEY] != pos.additions[ENDPOINT_KEY]:
+            logger.info("Duplicate position information from different sources. Stopping processing of this one.")
             return True
-    _last_processed_timestamp[tracker_data.deviceID] = timestamp
 
     # Get associated vehicle
     vehicle = _identify_vehicle(pos, tracker, tracker_data)
@@ -60,6 +62,7 @@ async def process(pos: Position) -> bool:
 
     # Store raw data
     ppos = ParsedPosition(position=pos, timestamp=timestamp, processed=datetime.now(), vehicle=vehicle, tracker=tracker)
+    _last_processed[tracker_data.deviceID] = ppos
     store_data(ppos)
 
     # Start analysis

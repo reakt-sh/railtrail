@@ -28,7 +28,10 @@ def all_vehicles():
 def get_tracker(deviceID: str, deviceType: str | None) -> Tracker | None:
     """Get the Tracker db entry for the given device"""
     # TODO handle mobile devices differently
-    if deviceID in _tracker_cache:
+    id = deviceID.upper()
+    if id in _tracker_cache:
+        return _tracker_cache[id]
+    elif deviceID in _tracker_cache: # undesired fallback
         return _tracker_cache[deviceID]
     else:
         return None
@@ -46,7 +49,7 @@ async def register_tracker(message: Position) -> Tracker:
     """Create a new Tracker for the received massage and register it in the database"""
     # TODO handle mobile devices differently
     info = TrackerInfo(
-        deviceID=message.deviceID,
+        deviceID=message.deviceID.upper(),
         deviceType=message.deviceType,
         batteryV=message.batteryV,
         devEUI=None,
@@ -54,7 +57,7 @@ async def register_tracker(message: Position) -> Tracker:
 
     # Special case for bad id in testing
     if re.search(r"^reakt-oyster3-draisine-[0-9]+-[0-9a-fA-F]{16}$", message.deviceID) is not None:
-        eui = message.deviceID.split("-")[-1]
+        eui = message.deviceID.split("-")[-1].upper()
         info.devEUI = eui
         info.deviceID = eui
 
@@ -65,16 +68,19 @@ async def register_tracker(message: Position) -> Tracker:
     tracker = await Tracker.prisma().create(entry)
 
     # Register in cache
-    _tracker_cache[message.deviceID] = tracker
+    _tracker_cache[message.deviceID.upper()] = tracker
     if info.devEUI:
-        _tracker_cache[info.devEUI] = tracker
+        _tracker_cache[info.devEUI.upper()] = tracker
 
     return tracker
 
 
 def find_vehicle_by_id(trackerID: str) -> Vehicle | None:
     """Get the vehicle via device id of associated tracker"""
-    if trackerID in _vehicle_map:
+    id = trackerID.upper()
+    if id in _vehicle_map:
+        return _vehicle_map[id]
+    elif trackerID in _vehicle_map: # undesired fallback
         return _vehicle_map[trackerID]
     return None
 

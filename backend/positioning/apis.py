@@ -5,6 +5,7 @@ import os
 from fastapi import APIRouter, Security, Body, HTTPException, status
 from typing import Any
 from auth import get_api_key
+from processing.constants import *
 from data.database import synchronize
 from schema_gen.position import Position
 from processing.infrastructure import process_position
@@ -43,7 +44,7 @@ async def raw_tracker(body: Any = Body(), api_key: str = Security(get_api_key)):
     # Mark endpoint
     if pos.additions is None:
         pos.additions = {}
-    pos.additions["endpoint"] = "ttn"
+    pos.additions[ENDPOINT_KEY] = ENDPOINT_ID_TTN
 
     # Validate against schema
     try:
@@ -69,7 +70,7 @@ async def onboard_tracker(pos: Position, api_key: str = Security(get_api_key)):
     # Mark endpoint
     if pos.additions is None:
         pos.additions = {}
-    pos.additions["endpoint"] = "onboard"
+    pos.additions[ENDPOINT_KEY] = ENDPOINT_ID_ONBOARD
 
     # Process
     process_position(pos)

@@ -1,3 +1,4 @@
+from processing.constants import OYSTER_3_LORA
 from schema_gen.position import Position
 from typing import Any
 
@@ -5,7 +6,7 @@ from typing import Any
 def convert_ttn_to_position(data: Any) -> Position:
     pos = Position.model_validate({"timestamp": "", "longitude": 0, "latitude": 0, "deviceID": "unknown"})
 
-    pos.deviceType = "oyster-3-lorawan"
+    pos.deviceType = OYSTER_3_LORA
     pos.original = data
 
     # Fail if not provided
