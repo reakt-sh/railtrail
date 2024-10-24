@@ -54,7 +54,7 @@
     },
     "deviceID": {
       "type": "string",
-      "description": "Unique identifier for the sending device."
+      "description": "Unique (case insensitive) identifier for the sending device."
     },
     "vehicle": {
       "type": "string",

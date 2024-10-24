@@ -11,7 +11,7 @@
   "properties": {
     "deviceID": {
       "type": "string",
-      "description": "Unique identifier for the sending device."
+      "description": "Unique (case insensitive) identifier for the sending device."
     },
     "deviceType": {
       "type": "string",
@@ -19,7 +19,7 @@
     },
     "devEUI": {
       "type": "string",
-      "pattern": "^([0-9a-fA-F]){16}$",
+      "pattern": "^([0-9A-F]){16}$",
       "description": "[Optional] The DevEUI of the sending device."
     },
     "batteryV": {
