@@ -1,11 +1,10 @@
-
 <mat-sidenav-container #sidenavcontainer role="main" class="sidenav-container"
-  [ngStyle]="{'margin-top.px': layout.headerHeight, 'height.px': layout.contentHeight}">
-  <mat-sidenav #sidenav [class.collapsed]="!layout.sideBySide" class="sidenav" [mode]="sidebarMode">
-  </mat-sidenav>
+    [ngStyle]="{'margin-top.px': layout.headerHeight, 'height.px': layout.contentHeight}">
+    <mat-sidenav #sidenav [class.collapsed]="!layout.sideBySide" class="sidenav" [mode]="sidebarMode">
+    </mat-sidenav>
 
-  <section class="sidenav-content" role="content" [ngStyle]="{'min-height.px': layout.contentHeight}">
-    <router-outlet></router-outlet>
-  </section>
+    <section class="sidenav-content" role="content" [ngStyle]="{'min-height.px': layout.contentHeight}">
+        <router-outlet></router-outlet>
+    </section>
 
 </mat-sidenav-container>

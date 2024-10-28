@@ -8,41 +8,43 @@ import { LoggingService } from "../../shared/logging.service";
 import { WINDOW } from "../../shared/window.provider";
 
 @Injectable({
-  providedIn: "root"
+    providedIn: "root"
 })
 export class PositionUpdateService {
 
-  private readonly logger: Logger;
-  private readonly url: string;
+    private readonly logger: Logger;
+    private readonly url: string;
 
-  constructor(
-    @Inject(WINDOW) window: Window,
-    logging: LoggingService,
-  ) {
-    this.logger = logging.getLogger("position-update:service");
+    constructor(
+        @Inject(WINDOW) window: Window,
+        logging: LoggingService,
+    ) {
+        this.logger = logging.getLogger("position-update:service");
 
-    if (environment.positionAPI && environment.positionAPI.startsWith("http")) {
-      this.url = `ws${environment.positionAPI.slice(4)}/position-updates`;
-    } else {
-      this.url = `${window.location.protocol.replace("http", "ws")}//${window.location.host}${environment.positionAPI}/position-updates`;
+        if (environment.positionAPI && environment.positionAPI.startsWith("http")) {
+            this.url = `ws${environment.positionAPI.slice(4)}/position-updates`;
+        } else {
+            this.url = `${window.location.protocol.replace("http", "ws")}//${window.location.host}${environment.positionAPI}/position-updates`;
+        }
+        // DO NOT COMMIT!
+        //this.url = "wss://railtrail.rtsys.informatik.uni-kiel.de/api/position-updates"
     }
-  }
 
-  public createUpdateSubscription(): Observable<MapPosition> {
-    return webSocket({
-      url: this.url
-    }).pipe(
-      map((msg) => this.processNotification(msg)),
-      catchError((err) => {
-        this.logger.error("Error in position update websocket connection.", err);
-        return EMPTY // close
-      })
-    );
-  }
+    public createUpdateSubscription(): Observable<MapPosition> {
+        return webSocket({
+            url: this.url
+        }).pipe(
+            map((msg) => this.processNotification(msg)),
+            catchError((err) => {
+                this.logger.error("Error in position update websocket connection.", err);
+                return EMPTY // close
+            })
+        );
+    }
 
-  private processNotification(msg: any): MapPosition {
-    // TODO Maybe validate beforehand
-    return msg as MapPosition
-  }
+    private processNotification(msg: any): MapPosition {
+        // TODO Maybe validate beforehand
+        return msg as MapPosition
+    }
 
 }

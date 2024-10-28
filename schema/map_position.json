@@ -1,60 +1,60 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://reakt.sh/schema/map-positions.json",
-  "title": "MapPosition",
-  "description": "A position of a vehicles that is processed to be displayed on a map.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "timestamp",
-    "vehicle",
-    "position",
-    "track"
-  ],
-  "properties": {
-    "timestamp": {
-      "type": "string",
-      "description": "Timestamp for the given position data in ISO 8601 format."
-    },
-    "vehicle": {
-      "type": "integer",
-      "description": "The vehicle ID associated with this position. Positive IDs indicate valid association with a vehicle, negative ones represent a unique ID for a position send by a tracker not associated with a vehicle."
-    },
-    "position": {
-      "type": "number",
-      "description": "The position relative to the track."
-    },
-    "track": {
-      "type": "string",
-      "description": "The track ID this position is located on."
-    },
-    "heading": {
-      "type": "number",
-      "description": "[Optional] Heading in degrees."
-    },
-    "speed": {
-      "type": "number",
-      "description": "[Optional] Speed in km/h."
-    },
-    "latitude": {
-      "type": "number",
-      "description": "[Optional] Latitude in degrees.",
-      "minimum": -90,
-      "maximum": 90
-    },
-    "longitude": {
-      "type": "number",
-      "description": "[Optional] Longitude in degrees.",
-      "minimum": -180,
-      "maximum": 180
-    },
-    "label": {
-      "type": "string",
-      "description": "[Optional] A label to display."
-    },
-    "offtrack": {
-      "type": "boolean",
-      "description": "[Optional] True indicated that the vehicle is not on the track and the position should be ignored and the coordinates will provide the intended positions on the map."
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://reakt.sh/schema/map-positions.json",
+    "title": "MapPosition",
+    "description": "A position of a vehicles that is processed to be displayed on a map.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "timestamp",
+        "vehicle",
+        "position",
+        "track"
+    ],
+    "properties": {
+        "timestamp": {
+            "type": "string",
+            "description": "Timestamp for the given position data in ISO 8601 format."
+        },
+        "vehicle": {
+            "type": "integer",
+            "description": "The vehicle ID associated with this position. Positive IDs indicate valid association with a vehicle, negative ones represent a unique ID for a position send by a tracker not associated with a vehicle."
+        },
+        "position": {
+            "type": "number",
+            "description": "The position relative to the track."
+        },
+        "track": {
+            "type": "string",
+            "description": "The track ID this position is located on."
+        },
+        "heading": {
+            "type": "number",
+            "description": "[Optional] Heading in degrees."
+        },
+        "speed": {
+            "type": "number",
+            "description": "[Optional] Speed in km/h."
+        },
+        "latitude": {
+            "type": "number",
+            "description": "[Optional] Latitude in degrees.",
+            "minimum": -90,
+            "maximum": 90
+        },
+        "longitude": {
+            "type": "number",
+            "description": "[Optional] Longitude in degrees.",
+            "minimum": -180,
+            "maximum": 180
+        },
+        "label": {
+            "type": "string",
+            "description": "[Optional] A label to display."
+        },
+        "offtrack": {
+            "type": "boolean",
+            "description": "[Optional] True indicated that the vehicle is not on the track and the position should be ignored and the coordinates will provide the intended positions on the map."
+        }
     }
-  }
 }

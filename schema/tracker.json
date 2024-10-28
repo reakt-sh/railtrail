@@ -1,30 +1,30 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://reakt.sh/schema/tracker.json",
-  "title": "TrackerInfo",
-  "description": "Information regarding a tracking device.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "deviceID"
-  ],
-  "properties": {
-    "deviceID": {
-      "type": "string",
-      "description": "Unique (case insensitive) identifier for the sending device."
-    },
-    "deviceType": {
-      "type": "string",
-      "description": "[Optional] The type of the sending device."
-    },
-    "devEUI": {
-      "type": "string",
-      "pattern": "^([0-9A-F]){16}$",
-      "description": "[Optional] The DevEUI of the sending device."
-    },
-    "batteryV": {
-      "type": "number",
-      "description": "[Optional] Battery voltage of the device."
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://reakt.sh/schema/tracker.json",
+    "title": "TrackerInfo",
+    "description": "Information regarding a tracking device.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "deviceID"
+    ],
+    "properties": {
+        "deviceID": {
+            "type": "string",
+            "description": "Unique (case insensitive) identifier for the sending device."
+        },
+        "deviceType": {
+            "type": "string",
+            "description": "[Optional] The type of the sending device."
+        },
+        "devEUI": {
+            "type": "string",
+            "pattern": "^([0-9A-F]){16}$",
+            "description": "[Optional] The DevEUI of the sending device."
+        },
+        "batteryV": {
+            "type": "number",
+            "description": "[Optional] Battery voltage of the device."
+        }
     }
-  }
 }

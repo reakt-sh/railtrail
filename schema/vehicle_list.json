@@ -1,63 +1,63 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://reakt.sh/schema/vehicle_list.json",
-  "title": "VehicleList",
-  "description": "List of all vehicles and their trackers.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "vehicles",
-    "trackers"
-  ],
-  "properties": {
-    "vehicles": {
-      "type": "array",
-      "description": "List of vehicles.",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "info"
-        ],
-        "properties": {
-          "id": {
-            "type": "number",
-            "description": "Unique identifier (usually DB ID)."
-          },
-          "info": {
-            "$ref": "vehicle.json"
-          },
-          "trackers": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://reakt.sh/schema/vehicle_list.json",
+    "title": "VehicleList",
+    "description": "List of all vehicles and their trackers.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "vehicles",
+        "trackers"
+    ],
+    "properties": {
+        "vehicles": {
             "type": "array",
-            "description": "[Optional] List of assigned trackers.",
+            "description": "List of vehicles.",
             "items": {
-              "type": "number"
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "id",
+                    "info"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "description": "Unique identifier (usually DB ID)."
+                    },
+                    "info": {
+                        "$ref": "vehicle.json"
+                    },
+                    "trackers": {
+                        "type": "array",
+                        "description": "[Optional] List of assigned trackers.",
+                        "items": {
+                            "type": "number"
+                        }
+                    }
+                }
             }
-          }
+        },
+        "trackers": {
+            "type": "array",
+            "description": "List of trackers.",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "id",
+                    "info"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "description": "Unique identifier (usually DB ID)."
+                    },
+                    "info": {
+                        "$ref": "tracker.json"
+                    }
+                }
+            }
         }
-      }
-    },
-    "trackers": {
-      "type": "array",
-      "description": "List of trackers.",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "info"
-        ],
-        "properties": {
-          "id": {
-            "type": "number",
-            "description": "Unique identifier (usually DB ID)."
-          },
-          "info": {
-            "$ref": "tracker.json"
-          }
-        }
-      }
     }
-  }
 }

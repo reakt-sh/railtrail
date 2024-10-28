@@ -1,7 +1,7 @@
 generator py {
-  provider = "prisma-client-py"
-  interface = "asyncio"
-  recursive_type_depth = -1
-  previewFeatures = ["relationJoins"]
+    provider = "prisma-client-py"
+    interface = "asyncio"
+    recursive_type_depth = -1
+    previewFeatures = ["relationJoins"]
 }
 

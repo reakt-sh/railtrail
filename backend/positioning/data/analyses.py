@@ -11,12 +11,13 @@ from prisma.types import AnalysisCreateInput
 
 logger = parent_logger.getChild("analysis")
 
+
 async def store_analysis(ana: AnalysisData):
     """Store the AnalysisData as Analysis entry in the database"""
     info = AnalysisInfo(
-      timestamp=ana.end.isoformat(),
-      processingTime=(ana.end - ana.start).total_seconds(),
-      mapPosition=ana.map_pos
+        timestamp=ana.end.isoformat(),
+        processingTime=(ana.end - ana.start).total_seconds(),
+        mapPosition=ana.map_pos
     )
     entry: AnalysisCreateInput = {
         "timestamp": ana.end,
@@ -31,12 +32,14 @@ async def store_analysis(ana: AnalysisData):
 
     # Add relations
     if ana.projection_source:
-      for pos in ana.projection_source.positions:
-          if pos.dbID: # Always save position first
-              await AnalysisSource.prisma().create({
-                  "analysisId": db_entry.uid,
-                  "dataId": pos.dbID,
-              })
+        for pos in ana.projection_source.positions:
+            if pos.dbID:  # Always save position first
+                await AnalysisSource.prisma().create(
+                    {
+                        "analysisId": db_entry.uid,
+                        "dataId": pos.dbID,
+                    }
+                )
 
 
 async def retrieve_latest_analysis_per_vehicle() -> List[Tuple[Vehicle, AnalysisInfo]]:
@@ -46,10 +49,10 @@ async def retrieve_latest_analysis_per_vehicle() -> List[Tuple[Vehicle, Analysis
     for v in all_vehicles():
         latest = await Analysis.prisma().find_first(
             where={
-                'vehicleId': v.uid,
+                "vehicleId": v.uid,
             },
             order={
-                'timestamp': 'desc',
+                "timestamp": "desc",
             },
         )
         if latest:

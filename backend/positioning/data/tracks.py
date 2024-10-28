@@ -27,6 +27,6 @@ for i in range(len(DEFAULT_LINE.tracks)):
             prev = data["features"][idx - 1]
             km = prev["properties"]["trackKm"] + distance(prev["geometry"], feature["geometry"])
         feature["properties"]["trackKm"] = km
-        
+
     AUGMENTED_TRACK_DATA[track.id] = data
     AUGMENTED_TRACK_LINESTRINGS[track.id] = LineString(gutils.coords(data))

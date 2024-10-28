@@ -1,28 +1,28 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, RouterStateSnapshot } from '@angular/router';
-import { AuthRole, AuthService } from './auth.service';
+import { Injectable } from "@angular/core";
+import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, RouterStateSnapshot } from "@angular/router";
+import { AuthRole, AuthService } from "./auth.service";
 
 @Injectable({
-  providedIn: 'root',
+    providedIn: "root",
 })
 export class AdminAuthGuard implements CanActivate, CanActivateChild {
 
-  constructor(
-    private auth: AuthService
-  ) {
-  }
+    constructor(
+        private auth: AuthService
+    ) {
+    }
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ) {
-    return this.auth.checkLogin(state.url, AuthRole.Admin);
-  }
+    canActivate(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot
+    ) {
+        return this.auth.checkLogin(state.url, AuthRole.Admin);
+    }
 
-  canActivateChild(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot) {
-    return this.canActivate(route, state);
-  }
+    canActivateChild(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot) {
+        return this.canActivate(route, state);
+    }
 
 }

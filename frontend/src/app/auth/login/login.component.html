@@ -1,39 +1,27 @@
 <div role="main" class="container">
-	<h1 i18n>Authentication Required!</h1>
-	<span *ngIf="logout" i18n>Successfully logged out.</span>
-	<mat-form-field appearance="outline" (onsubmit)="sendLogin()">
-    <mat-label i18n>Password</mat-label>
-    <input matInput
-			[formControl]="passwordForm"
-      (blur)="updateErrorMessage()"
-      (keyup.enter)="sendLogin()"
-			[type]="hide() ? 'password' : 'text'"
-      required />
-    <button
-      mat-icon-button
-      matSuffix
-      (click)="clickHide($event)"
-      [attr.aria-label]="'Hide password'"
-      [attr.aria-pressed]="hide()"
-    >
-      <mat-icon>{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
-    </button>
-		@if (passwordForm.invalid) {
-			<mat-error>{{passwordErrorMessage()}}</mat-error>
-		}
-  </mat-form-field>
-	<div class="buttons">
-		<div>
-			<mat-button-toggle-group
-					i18n-name name="Role"
-					#btnGroup="matButtonToggleGroup"
-					(change)="selectedRole = btnGroup.value"
-					[value]="selectedRole">
-					<mat-button-toggle i18n [value]="roles.Operator">Operator</mat-button-toggle>
-				<mat-button-toggle i18n [value]="roles.Admin">Admin</mat-button-toggle>
-			</mat-button-toggle-group>
-		</div>
-		<button i18n mat-stroked-button class="login-btn" (click)="sendLogin()">Log in</button>
-	</div>
-	<span *ngIf="failed()" class="error" i18n>Login failed.</span>
+    <h1 i18n>Authentication Required!</h1>
+    <span *ngIf="logout" i18n>Successfully logged out.</span>
+    <mat-form-field appearance="outline" (onsubmit)="sendLogin()">
+        <mat-label i18n>Password</mat-label>
+        <input matInput [formControl]="passwordForm" (blur)="updateErrorMessage()" (keyup.enter)="sendLogin()"
+            [type]="hide() ? 'password' : 'text'" required />
+        <button mat-icon-button matSuffix (click)="clickHide($event)" [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hide()">
+            <mat-icon>{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+        @if (passwordForm.invalid) {
+        <mat-error>{{passwordErrorMessage()}}</mat-error>
+        }
+    </mat-form-field>
+    <div class="buttons">
+        <div>
+            <mat-button-toggle-group i18n-name name="Role" #btnGroup="matButtonToggleGroup"
+                (change)="selectedRole = btnGroup.value" [value]="selectedRole">
+                <mat-button-toggle i18n [value]="roles.Operator">Operator</mat-button-toggle>
+                <mat-button-toggle i18n [value]="roles.Admin">Admin</mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+        <button i18n mat-stroked-button class="login-btn" (click)="sendLogin()">Log in</button>
+    </div>
+    <span *ngIf="failed()" class="error" i18n>Login failed.</span>
 </div>

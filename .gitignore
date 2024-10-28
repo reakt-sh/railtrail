@@ -1,3 +1,6 @@
+# Project specific
+local/
+
 # IDEs and editors
 .idea/
 .project

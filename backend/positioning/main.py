@@ -16,9 +16,10 @@ from apis import router
 from processing.infrastructure import setup_processing
 from processing.notifier import handle_subscription
 
+
 # Init api
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_: FastAPI):
     """Startup and shutdown hook"""
     # Connect to db
     await connect()
@@ -43,10 +44,12 @@ app.add_middleware(
 )
 app.include_router(router)
 
+
 # Register websocket endpoint
 @app.websocket("/position-updates")
 async def position_updates(ws: WebSocket):
     await handle_subscription(ws)
+
 
 # Dev Start
 if __name__ == "__main__":
