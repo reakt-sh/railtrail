@@ -8,6 +8,7 @@ import { RailLine } from "../../../../schema-gen/railline";
 import { LoggingService } from "../../shared/logging.service";
 import { PositionUpdateService } from "./position-update.service";
 import { RailLineService } from "./rail-line.service";
+import { AuthService } from "../../auth/auth.service";
 
 @Injectable({
     providedIn: "root"
@@ -20,6 +21,7 @@ export class MapLogicService {
 
     constructor(
         private readonly railline: RailLineService,
+        private readonly auth: AuthService,
         positionUpdates: PositionUpdateService,
         logging: LoggingService,
     ) {
@@ -104,7 +106,7 @@ export class MapLogicService {
                 "icon-size": 0.5,
                 "icon-allow-overlap": true
             }
-        } as any);
+        });
     }
 
     private updateVehiclePosition(pos: MapPosition) {
@@ -116,7 +118,11 @@ export class MapLogicService {
         if (this.map) {
             const data = {
                 "type": "FeatureCollection",
-                "features": Object.entries(this.vehiclePositions).map(([_, pos]) => {
+                "features": Object.entries(this.vehiclePositions).filter(
+                    ([_, pos]) =>
+                        (pos.vehicle > 0 || this.auth.isLoggedInAsAdmin()) &&
+                        (!pos.offtrack || this.auth.isLoggedInAsOperator())
+                ).map(([_, pos]) => {
                     return {
                         "type": "Feature",
                         "properties": {
