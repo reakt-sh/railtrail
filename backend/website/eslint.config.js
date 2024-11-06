@@ -20,7 +20,19 @@ module.exports = tseslint.config(
                     "allowTemplateLiterals": true
                 }
             ],
-            "@/indent": ["error", 4]
+            "@/indent": ["error", 4],
+            "@typescript-eslint/no-unused-vars": [
+                "error",
+                {
+                    "args": "all",
+                    "argsIgnorePattern": "^_",
+                    "caughtErrors": "all",
+                    "caughtErrorsIgnorePattern": "^_",
+                    "destructuredArrayIgnorePattern": "^_",
+                    "varsIgnorePattern": "^_",
+                    "ignoreRestSiblings": true
+                }
+            ]
         },
     }
 );
