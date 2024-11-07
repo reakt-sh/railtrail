@@ -38,19 +38,19 @@ async def handle_subscription(websocket: WebSocket):
 
 async def notify_subscribers(ana: AnalysisData):
     if ana.map_pos:
-      # Convert to Json
-      data = ana.map_pos.model_dump(exclude_unset=True, exclude_defaults=True)
+        # Convert to Json
+        data = ana.map_pos.model_dump(exclude_unset=True, exclude_defaults=True)
 
-      # Store new position in initial state for new connections
-      global _initial_data
-      _initial_data[ana.map_pos.vehicle] = data
+        # Store new position in initial state for new connections
+        global _initial_data
+        _initial_data[ana.map_pos.vehicle] = data
 
-      # Push data to all update queues
-      for q in _update_queues:
-          try:
-              q.put_nowait(data)
-          except QueueFull:
-              logger.warning("Dropped map position data because of high load in update queue!")
+        # Push data to all update queues
+        for q in _update_queues:
+            try:
+                q.put_nowait(data)
+            except QueueFull:
+                logger.warning("Dropped map position data because of high load in update queue!")
     else:
         logger.warning("Given AnalysisData does not contain a MapPosition!")
 
@@ -61,11 +61,11 @@ async def sync_initial_positions():
     records = await retrieve_latest_analysis_per_vehicle()
     for vehicle, analysis in records:
         if analysis.mapPosition:
-          # Update label in case of recent changes
-          if "label" in vehicle.info:
-              analysis.mapPosition.label = str(vehicle.info["label"])
+            # Update label in case of recent changes
+            if "label" in vehicle.info:
+                analysis.mapPosition.label = str(vehicle.info["label"])
 
-          new_data[vehicle.uid] = analysis.mapPosition.model_dump(exclude_unset=True, exclude_defaults=True)
+            new_data[vehicle.uid] = analysis.mapPosition.model_dump(exclude_unset=True, exclude_defaults=True)
 
     # Set new state
     global _initial_data
