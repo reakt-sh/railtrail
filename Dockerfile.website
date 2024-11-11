@@ -66,4 +66,4 @@ COPY ./database ./db-src
 RUN cat "./db-src/node.prisma" "./db-src/model.prisma" > schema.prisma
 RUN npx prisma generate
 
-CMD node main.js
+CMD ["npm", "start"]
