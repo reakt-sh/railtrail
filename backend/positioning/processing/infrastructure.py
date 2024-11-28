@@ -2,7 +2,7 @@ import os
 import asyncio
 import traceback
 from schema_gen.position import Position
-from processing.custom_types import AnalysisData, ParsedPosition
+from processing.custom_types import AnalysisData, DeviceStats, ParsedPosition
 from processing import logger
 
 
@@ -36,7 +36,7 @@ def store_data(data):
 ### INTERNAL
 
 from processing.process import process
-from data.positions import store_raw_data
+from data.positions import store_raw_data, store_stats
 from data.analyses import store_analysis
 
 _workers = set()
@@ -64,6 +64,8 @@ async def _writeback_loop():
                 await store_raw_data(data)
             elif isinstance(data, AnalysisData):
                 await store_analysis(data)
+            elif isinstance(data, DeviceStats):
+                await store_stats(data)
             else:
                 logger.warning("Discarded writeback data because of unknown type: %s", type(data))
         except Exception:

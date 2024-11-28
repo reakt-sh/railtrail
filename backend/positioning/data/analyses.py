@@ -1,13 +1,16 @@
+"""Functions for storing analysis related data"""
+
 import traceback
 from typing import List, Tuple
-from prisma.models import Analysis, Vehicle, AnalysisSource
 from prisma import Json
+from prisma.models import Analysis, Vehicle, AnalysisSource
+from prisma.types import AnalysisCreateInput
 from pydantic import ValidationError
+
 from data.trackers import all_vehicles
+from data import logger as parent_logger
 from schema_gen.analysis import AnalysisInfo
 from processing.custom_types import AnalysisData
-from data import logger as parent_logger
-from prisma.types import AnalysisCreateInput
 
 logger = parent_logger.getChild("analysis")
 

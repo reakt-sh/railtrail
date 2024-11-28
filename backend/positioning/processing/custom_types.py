@@ -1,6 +1,10 @@
+"""Custom types used internally (non API).
+   API must be specified via JSON Schema!"""
+
 from datetime import datetime
+from typing import Any, Optional, List
+
 from pydantic import BaseModel
-from typing import Optional, List
 from schema_gen.map_position import MapPosition
 from schema_gen.position import Position
 from prisma.models import Tracker, Vehicle
@@ -25,4 +29,8 @@ class AnalysisData(BaseModel):
     projection_source: Optional[Projection] = None
     dbID: Optional[int] = None
 
+class DeviceStats(BaseModel):
+    deviceID: str
+    timestamp: datetime
+    data: Any
 

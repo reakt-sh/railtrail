@@ -1,17 +1,20 @@
+"""Functions for storing position related data """
+
 import re
 import traceback
 from typing import Dict, cast
 from prisma import Json
 from prisma.models import Tracker, Vehicle
+from prisma.types import TrackerCreateInput
+
 from pydantic import ValidationError
 from schema_gen.tracker import TrackerInfo
 from schema_gen.position import Position
-from prisma.types import TrackerCreateInput
 from data import logger as parent_logger
-
 
 logger = parent_logger.getChild("analysis")
 
+# Internal caches
 _tracker_cache: Dict[str, Tracker] = {}
 _tracker_info_cache: Dict[str, TrackerInfo] = {}
 _vehicle_map: Dict[str, Vehicle] = {}

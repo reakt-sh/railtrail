@@ -1,7 +1,5 @@
-import jsonschema
-import json
 import logging
-import os
+import jsonschema
 from fastapi import APIRouter, Security, Body, HTTPException, status
 from typing import Any
 from auth import get_api_key
@@ -9,7 +7,7 @@ from processing.constants import *
 from data.database import synchronize
 from schema_gen.position import Position
 from processing.infrastructure import process_position
-from processing.ttn import convert_ttn_to_position
+from processing.ttn import handle_ttn_message
 from processing.notifier import _initial_data
 
 router = APIRouter()
@@ -25,44 +23,37 @@ async def hello_world():
 
 ## Route: Tracking
 
-### Load json schemas
-with open(os.path.join(os.getenv("SCHEMA_PATH", "./schema"), "position.json")) as f:
-    _position_schema = json.load(f)
-
-
 @router.post("/tracking/ttn")
 async def raw_tracker(body: Any = Body(), api_key: str = Security(get_api_key)):
     try:
-        pos = convert_ttn_to_position(body)
-    except Exception as e:
-        logger.info(f"Error while converting TTN message. Error: {e} Message: {str(body)}")
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Malformed payload",
-        )
-
-    # Mark endpoint
-    if pos.additions is None:
-        pos.additions = {}
-    pos.additions[ENDPOINT_KEY] = ENDPOINT_ID_TTN
-
-    # Validate against schema
-    try:
-        pos_dict = {k: v for k, v in pos.model_dump().items() if v is not None}
-        jsonschema.validate(instance=pos_dict, schema=_position_schema)
+        pos = handle_ttn_message(body)
     except jsonschema.exceptions.ValidationError as ve:  # type: ignore
         logger.info(ve)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Malformed payload: " + ve.message,
         )
+    except Exception as e:
+        logger.info(f"Error while parsing TTN message. Error: {e} Message: {str(body)}")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Malformed payload",
+        )
 
-    # Process normally
-    process_position(pos)
+    if pos:
+        # Mark endpoint
+        if pos.additions is None:
+            pos.additions = {}
+        pos.additions[ENDPOINT_KEY] = ENDPOINT_ID_TTN
 
-    # FIXME just testing
-    global _last
-    _last = pos
+        # Process normally
+        process_position(pos)
+
+        # FIXME just testing
+        global _last_received
+        _last_received = pos
+    else:
+        logger.debug("No position in parsed TTN message.")
 
 
 @router.post("/tracking/onboard")
