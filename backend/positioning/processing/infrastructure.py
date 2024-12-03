@@ -15,6 +15,12 @@ def setup_processing():
     _workers.add(writeback_worker)  # Keep reference to prevent garbage collection
 
 
+def shutdown_processing():
+    """Stop all workers by shutting down queues"""
+    _processing_queue.shutdown()
+    _writeback_queue.shutdown()
+
+
 def process_position(pos: Position):
     """Add a new position to the processing queue"""
     global _processing_queue
@@ -39,35 +45,41 @@ from processing.process import process
 from data.positions import store_raw_data, store_stats
 from data.analyses import store_analysis
 
-_workers = set()
+_workers: set[asyncio.Task] = set()
 _processing_queue = asyncio.Queue(maxsize=1000)
 _writeback_queue = asyncio.Queue(maxsize=1000)
 
 
 async def _processor_loop():
-    while True:
-        pos: Position = await _processing_queue.get()
-        try:
-            processed = await process(pos)
-            if not processed:
-                logger.warning("Discarded invalid data: %s", pos)
-        except Exception:
-            traceback.print_exc()
-            logger.error("Processing failed!")
+    try:
+        while True:
+            pos: Position = await _processing_queue.get()
+            try:
+                processed = await process(pos)
+                if not processed:
+                    logger.warning("Discarded invalid data: %s", pos)
+            except Exception:
+                traceback.print_exc()
+                logger.error("Processing failed!")
+    except asyncio.QueueShutDown:
+        logger.info("Position worker terminated due to queue shutdown.")
 
 
 async def _writeback_loop():
-    while True:
-        data = await _writeback_queue.get()
-        try:
-            if isinstance(data, ParsedPosition):
-                await store_raw_data(data)
-            elif isinstance(data, AnalysisData):
-                await store_analysis(data)
-            elif isinstance(data, DeviceStats):
-                await store_stats(data)
-            else:
-                logger.warning("Discarded writeback data because of unknown type: %s", type(data))
-        except Exception:
-            traceback.print_exc()
-            logger.error("Database writeback failed!")
+    try:
+        while True:
+            data = await _writeback_queue.get()
+            try:
+                if isinstance(data, ParsedPosition):
+                    await store_raw_data(data)
+                elif isinstance(data, AnalysisData):
+                    await store_analysis(data)
+                elif isinstance(data, DeviceStats):
+                    await store_stats(data)
+                else:
+                    logger.warning("Discarded writeback data because of unknown type: %s", type(data))
+            except Exception:
+                traceback.print_exc()
+                logger.error("Database writeback failed!")
+    except asyncio.QueueShutDown:
+        logger.info("Writeback worker terminated due to queue shutdown.")

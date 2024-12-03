@@ -13,8 +13,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from data.database import connect, disconnect
 from apis import router
-from processing.infrastructure import setup_processing
-from processing.notifier import handle_subscription
+from processing.infrastructure import setup_processing, shutdown_processing
+from processing.notifier import close_connections, handle_subscription
 
 
 # Init api
@@ -28,6 +28,10 @@ async def lifespan(_: FastAPI):
 
     yield  # normal operation
 
+    # Close websocket connections
+    close_connections()
+    # Stop async workers
+    shutdown_processing()
     # Close connection
     await disconnect()
 

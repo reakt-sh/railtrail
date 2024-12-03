@@ -1,4 +1,4 @@
-from asyncio import Queue, QueueFull
+from asyncio import Queue, QueueFull, QueueShutDown
 from fastapi import WebSocket, WebSocketDisconnect
 from data.analyses import retrieve_latest_analysis_per_vehicle
 from processing.custom_types import AnalysisData
@@ -26,6 +26,8 @@ async def handle_subscription(websocket: WebSocket):
         while True:
             data = await queue.get()
             await websocket.send_json(data)
+    except QueueShutDown:
+        logger.info("Connection terminates due to queue shutdown.")
     except WebSocketDisconnect:
         logger.debug("Subscriber disconnected.")
     except Exception:
@@ -71,6 +73,12 @@ async def sync_initial_positions():
     global _initial_data
     _initial_data = new_data
     logger.info("Loaded %d map positions for vehicles", len(new_data.values()))
+
+
+def close_connections():
+    """Stop all connections by shutting down queues"""
+    for q in _update_queues[:]:  # iterate over copy as handlers will remove their queue form the list
+        q.shutdown()
 
 
 ### INTERNAL
