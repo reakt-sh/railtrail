@@ -20,5 +20,5 @@ RUN datamodel-codegen --input ./schema/ --input-file-type jsonschema --output ./
 # Data
 COPY ./raillines ./raillines
 
-# Start
-CMD uvicorn main:app --host 0.0.0.0 --port 5010 --root-path $URL_ROOT_PATH --log-config=log_conf.yaml
+# Start (always in exec form to handle signals correctly)
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5010", "--root-path", "$URL_ROOT_PATH", "--log-config=log_conf.yaml"]

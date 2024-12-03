@@ -12,4 +12,4 @@ COPY ./database/model.prisma ./schema.prisma
 COPY ./database/migrations ./migrations
 
 # Perform migration
-CMD npx prisma migrate deploy
+CMD ["npx", "prisma", "migrate", "deploy"]

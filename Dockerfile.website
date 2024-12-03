@@ -66,4 +66,5 @@ COPY ./database ./db-src
 RUN cat "./db-src/node.prisma" "./db-src/model.prisma" > schema.prisma
 RUN npx prisma generate
 
-CMD npm run docker-start
+# Start (always in exec form to handle signals correctly)
+CMD ["npm", "run", "docker-start"]
