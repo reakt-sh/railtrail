@@ -31,8 +31,8 @@ def init():
     print("# Init positioning backend")
 
     print("## Setting up Python virtual environment")
-    if sys.version_info[1] < 12:
-        print("ERROR: Python virtual environment must be set up with Python 3.12+ to match runtime environment!")
+    if sys.version_info[1] < 13:
+        print("ERROR: Python virtual environment must be set up with Python 3.13+ to match runtime environment!")
         sys.exit(-1)
     venv.create(BKE_POS_VENV_DIR, clear=False, with_pip=True)
 
