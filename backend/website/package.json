@@ -5,8 +5,8 @@
         "debug": "npm run build-debug && DEBUG=app* node --nolazy --inspect-brk dist/main.js",
         "build": "tsc -p .",
         "build-debug": "tsc -p ./tsconfig.debug.json",
-        "start": "node main.js",
-        "stop": "pkill -SIGTERM -f main.js"
+        "start": "node dist/main.js",
+        "docker-start": "node main.js"
     },
     "private": true,
     "dependencies": {
