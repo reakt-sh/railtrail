@@ -39,7 +39,7 @@ export class AuthService {
                     this.logger.debug("Redirecting to root.");
                     this.router.navigateByUrl("/");
                 }
-            } else if (!loggedInAs && this.redirectPage && this.redirectPage !== this.loginPage) {
+            } else if ((!loggedInAs || (this.requestedRole && this.requestedRole != loggedInAs.role)) && this.redirectPage && this.redirectPage !== this.loginPage) {
                 this.router.navigateByUrl(this.loginPage);
                 this.logger.debug("Redirecting to login page.");
             }
@@ -75,7 +75,7 @@ export class AuthService {
         } else {
             this.redirectPage = url;
             this.requestedRole = role;
-            return this.testAuthStatus();
+            return this.testAuthStatus(role);
         }
     }
 
