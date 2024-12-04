@@ -1,24 +1,20 @@
-import { HttpClient } from "@angular/common/http";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { Logger } from "loglevel";
 import { VehicleList } from "../../../../schema-gen/vehicle_list";
-import { environment } from "../../../environments/environment";
 import { LoggingService } from "../../shared/logging.service";
 import { MyMaterialModule } from "../../shared/my-material.module";
 import { NotificationService } from "../../shared/notification.service";
 import { TrackerInfo } from "../../../../schema-gen/tracker";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
-import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { SelectionChange } from "@angular/cdk/collections";
-import { MatSelectChange } from "@angular/material/select";
 import { AuthService } from "../../auth/auth.service";
+import { VehiclesService } from "../../shared/vehicles.service";
 
 @Component({
     selector: "app-admin-vehicles",
     standalone: true,
-    imports: [CommonModule, FormsModule, MyMaterialModule],
+    imports: [FormsModule, MyMaterialModule],
     templateUrl: "./vehicles.component.html",
     styleUrl: "./vehicles.component.scss"
 })
@@ -40,12 +36,12 @@ export class VehiclesComponent implements OnInit {
     protected vehicleList?: VehicleList;
 
     constructor(
-        private http: HttpClient,
         readonly notifier: NotificationService,
         readonly auth: AuthService,
-        logging: LoggingService,
+        readonly vehicles: VehiclesService,
+        readonly logging: LoggingService,
     ) {
-        this.logger = logging.getLogger("vehicles:component");
+        this.logger = logging.getLogger("admin::vehicles:component");
     }
 
     ngOnInit(): void {
@@ -110,8 +106,8 @@ export class VehiclesComponent implements OnInit {
             trackers: [],
         };
         this.logger.debug("New vehicle list", newList);
-        this.http.post<VehicleList>(environment.webAPI + "/vehicles", newList).subscribe({
-            next: (list: VehicleList) => {
+        this.vehicles.saveList(newList).subscribe({
+            next: (_: VehicleList) => {
                 this.loaded = false;
                 this.edit = false;
                 this.displayedColumns = this.viewModeColumns;
@@ -126,7 +122,7 @@ export class VehiclesComponent implements OnInit {
     }
 
     private requestList() {
-        this.http.get<VehicleList>(environment.webAPI + "/vehicles").subscribe({
+        this.vehicles.requestList().subscribe({
             next: (list: VehicleList) => {
                 this.loaded = true;
                 this.vehicleList = list;

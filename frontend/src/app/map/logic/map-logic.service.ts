@@ -6,7 +6,7 @@ import { Map } from "maplibre-gl";
 import { MapPosition } from "../../../../schema-gen/map_position";
 import { RailLine } from "../../../../schema-gen/railline";
 import { LoggingService } from "../../shared/logging.service";
-import { PositionUpdateService } from "./position-update.service";
+import { VehiclesService } from "../../shared/vehicles.service";
 import { RailLineService } from "./rail-line.service";
 import { AuthService } from "../../auth/auth.service";
 
@@ -22,7 +22,7 @@ export class MapLogicService {
     constructor(
         private readonly railline: RailLineService,
         private readonly auth: AuthService,
-        positionUpdates: PositionUpdateService,
+        vehiclesUpdates: VehiclesService,
         logging: LoggingService,
     ) {
         this.logger = logging.getLogger("map:logic");
@@ -30,7 +30,7 @@ export class MapLogicService {
         railline.getRailLine().subscribe({
             next: () => {
                 // Subscribe to vehicle positions
-                positionUpdates.createUpdateSubscription().subscribe({
+                vehiclesUpdates.createMapUpdateSubscription().subscribe({
                     next: (pos: MapPosition) => {
                         this.updateVehiclePosition(pos);
                     }
