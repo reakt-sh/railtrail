@@ -1,3 +1,5 @@
+"""Main entry point for positioning server that receives location information and processes and distributes all position related data."""
+
 # If in debug mode, populate environment first
 import os
 
@@ -59,4 +61,10 @@ async def position_updates(ws: WebSocket):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="localhost", port=5010, log_config="log_conf.yaml")
+    uvicorn.run(
+        app,
+        host=os.environ.get("HOST", "localhost"),
+        port=int(os.environ.get("PORT", "5010")),
+        root_path=os.environ.get("URL_ROOT_PATH", ""),
+        log_config="log_conf.yaml",
+    )
