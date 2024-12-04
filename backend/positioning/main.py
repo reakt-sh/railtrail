@@ -30,11 +30,11 @@ async def lifespan(_: FastAPI):
 
     yield  # normal operation
 
-    # Close websocket connections
-    close_connections()
     # Stop async workers
     shutdown_processing()
-    # Close connection
+    # Close websocket connections
+    await close_connections()
+    # Close db connection
     await disconnect()
 
 
