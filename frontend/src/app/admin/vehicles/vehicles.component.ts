@@ -13,7 +13,6 @@ import { VehiclesService } from "../../shared/vehicles.service";
 
 @Component({
     selector: "app-admin-vehicles",
-    standalone: true,
     imports: [FormsModule, MyMaterialModule],
     templateUrl: "./vehicles.component.html",
     styleUrl: "./vehicles.component.scss"

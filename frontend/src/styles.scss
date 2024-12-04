@@ -1,6 +1,6 @@
-@import 'styles/material/roboto.scss';
-@import 'styles/material/material-icons.scss';
-@import 'styles/colors.scss';
+@forward 'styles/material/roboto.scss';
+@forward 'styles/material/material-icons.scss';
+@forward 'styles/colors.scss';
 
 html,
 body {

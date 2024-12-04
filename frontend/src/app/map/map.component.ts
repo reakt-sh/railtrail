@@ -11,7 +11,6 @@ import { RailLineService } from "./logic/rail-line.service";
 
 @Component({
     selector: "app-map",
-    standalone: true,
     imports: [LibreMapComponent],
     templateUrl: "./map.component.html",
     styleUrl: "./map.component.scss"

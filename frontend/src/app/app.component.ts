@@ -8,7 +8,6 @@ import { MyMaterialModule } from "./shared/my-material.module";
 
 @Component({
     selector: "app-root",
-    standalone: true,
     imports: [
         RouterOutlet,
         MyMaterialModule,

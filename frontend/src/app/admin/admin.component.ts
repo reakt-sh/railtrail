@@ -4,7 +4,6 @@ import { MyMaterialModule } from "../shared/my-material.module";
 
 @Component({
     selector: "app-admin",
-    standalone: true,
     imports: [RouterLink, MyMaterialModule],
     templateUrl: "./admin.component.html",
     styleUrl: "./admin.component.scss"
