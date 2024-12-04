@@ -3,7 +3,7 @@
 import logging
 from typing import Any
 import jsonschema
-from fastapi import APIRouter, Security, Body, HTTPException, status
+from fastapi import APIRouter, Response, Security, Body, HTTPException, status
 
 from auth import get_api_key
 from data.database import synchronize
@@ -25,7 +25,14 @@ async def hello_world():
     return {"hello": "world"}
 
 
+@router.get("/alive")
+async def alive():
+    """Used for health checks. Only sends success."""
+    return Response()  # Just 200
+
+
 ## Route: Tracking
+
 
 @router.post("/tracking/ttn")
 async def raw_tracker(body: Any = Body(), _api_key: str = Security(get_api_key)):
