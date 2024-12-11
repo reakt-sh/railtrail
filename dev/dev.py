@@ -9,20 +9,21 @@ if sys.version_info[0] < 3:
 
 import argparse
 import venv
-from os import makedirs, environ, remove
-from os.path import join, isdir, isfile, abspath, dirname
+from os import makedirs, environ, remove, symlink
+from os.path import join, isdir, isfile, abspath, dirname, exists
 from subprocess import run, Popen
 from shutil import copyfile, copytree, rmtree
 from dotenv import load_dotenv
 
 DEV_DIR = abspath(dirname(__file__))
 ROOT_DIR = dirname(DEV_DIR)
+ROOT_VENV_DIR = join(ROOT_DIR, ".venv")
 
 DB_SCHEMA_DIR = join(ROOT_DIR, "database")
 DATA_SCHEMA_DIR = join(ROOT_DIR, "schema")
 
 BKE_POS_DIR = join(ROOT_DIR, "backend", "positioning")
-BKE_POS_VENV_DIR = join(BKE_POS_DIR, "venv")
+BKE_POS_VENV_DIR = join(BKE_POS_DIR, ".venv")
 BKE_WEB_DIR = join(ROOT_DIR, "backend", "website")
 FTE_DIR = join(ROOT_DIR, "frontend")
 
@@ -42,6 +43,10 @@ def init():
         cwd=BKE_POS_DIR,
         env=dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR),
     )
+
+    if not exists(ROOT_VENV_DIR):
+        print("## Link venv to project root")
+        symlink(BKE_POS_VENV_DIR, ROOT_VENV_DIR, target_is_directory=True)
 
     print("# Init website backend")
     print("## Installing NPM dependencies")
@@ -156,6 +161,7 @@ def start_all():
 
         # Wait for any to block
         pos.wait()
+        web.wait()
     except KeyboardInterrupt as ki:
         if db:
             db.terminate()

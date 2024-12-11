@@ -1,0 +1,19 @@
+<div class="container">
+    <h1 i18n>Vehicles</h1>
+
+    <mat-spinner *ngIf="!loaded"></mat-spinner>
+
+    <mat-accordion *ngIf="loaded">
+        @for (vehicle of vehicleList?.vehicles; track vehicle) {
+        <mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
+            <mat-expansion-panel-header>
+                <mat-panel-title>vehicle.info.label</mat-panel-title>
+                <!-- <mat-panel-description> This is a summary of the content </mat-panel-description> -->
+            </mat-expansion-panel-header>
+            <ng-template matExpansionPanelContent>
+                <p>This is the primary content of the panel.</p>
+            </ng-template>
+        </mat-expansion-panel>
+        }
+    </mat-accordion>
+</div>

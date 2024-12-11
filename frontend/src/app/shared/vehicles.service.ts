@@ -32,8 +32,6 @@ export class VehiclesService {
         } else {
             this.mapUpdateUrl = `${window.location.protocol.replace("http", "ws")}//${window.location.host}${environment.positionAPI}/position-updates`;
         }
-        // DO NOT COMMIT!
-        //this.url = "wss://railtrail.rtsys.informatik.uni-kiel.de/api/position-updates"
     }
 
     public requestList() : Observable<VehicleList> {
