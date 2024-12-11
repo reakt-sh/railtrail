@@ -11,13 +11,17 @@ export enum AuthRole {
     Operator = "operator"
 }
 
+interface User {
+    role: AuthRole
+}
+
 // Simple middleware to ensure user is authenticated.
 
 /**
  * Only lets users logged in as admins pass.
  */
 export function authOperatorGuard(req: Request, res: Response, next: NextFunction) {
-    if (req.isAuthenticated() && ((req.user as any).role === AuthRole.Operator || (req.user as any).role === AuthRole.Admin)) {
+    if (req.isAuthenticated() && ((req.user as User).role === AuthRole.Operator || (req.user as User).role === AuthRole.Admin)) {
         return next();
     }
     res.status(403).end();
@@ -27,7 +31,7 @@ export function authOperatorGuard(req: Request, res: Response, next: NextFunctio
  * Only lets users logged in as admins pass.
  */
 export function authAdminGuard(req: Request, res: Response, next: NextFunction) {
-    if (req.isAuthenticated() && (req.user as any).role === AuthRole.Admin) {
+    if (req.isAuthenticated() && (req.user as User).role === AuthRole.Admin) {
         return next();
     }
     res.status(403).end();
@@ -72,11 +76,11 @@ export function initTestingAuthentication() {
     testingAuthenticationID = s.name;
 
     // FIXME Do not identify role by name
-    passport.serializeUser((user: any, done) => {
-        done(null, user.role);
+    passport.serializeUser((user, done) => {
+        done(null, (user as User).role);
     });
     // FIXME Do not identify role by name
-    passport.deserializeUser((user: any, done) => {
+    passport.deserializeUser((user, done) => {
         done(null, { role: user });
     });
 }

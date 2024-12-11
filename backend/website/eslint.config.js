@@ -5,7 +5,7 @@ const tseslint = require("typescript-eslint");
 module.exports = tseslint.config(
     {
         files: ["**/*.ts"],
-        ignores: ["schema-gen/", "dist"],
+        ignores: ["schema-gen/*", "dist/*"],
         extends: [
             eslint.configs.recommended,
             ...tseslint.configs.recommended,
@@ -13,7 +13,7 @@ module.exports = tseslint.config(
         ],
         rules: {
             "@/quotes": [
-                "warn",
+                "error",
                 "double",
                 {
                     "avoidEscape": true,
@@ -22,7 +22,7 @@ module.exports = tseslint.config(
             ],
             "@/indent": ["error", 4],
             "@typescript-eslint/no-unused-vars": [
-                "error",
+                "warn",
                 {
                     "args": "all",
                     "argsIgnorePattern": "^_",

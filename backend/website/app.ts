@@ -97,7 +97,7 @@ app.get("/api/auth/logout", (req, res) => {
 
 // Route for login
 app.post("/api/auth/login-role", (req, res, next) => {
-    passport.authenticate(testingAuthenticationID, (err: any, user: any, info: any, status: any) => {
+    passport.authenticate(testingAuthenticationID, (err: unknown, user: unknown, info: unknown, status: unknown) => {
         if (user) {
             req.logIn(user, (err) => {
                 if (err) {

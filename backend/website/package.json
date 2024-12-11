@@ -6,7 +6,8 @@
         "build": "tsc -p .",
         "build-debug": "tsc -p ./tsconfig.debug.json",
         "start": "node dist/main.js",
-        "docker-start": "node main.js"
+        "docker-start": "node main.js",
+        "lint": "eslint ."
     },
     "private": true,
     "dependencies": {

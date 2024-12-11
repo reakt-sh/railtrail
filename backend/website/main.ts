@@ -12,12 +12,12 @@ const server = app.listen(app.get("port"), () => {
     );
 });
 
-process.on('SIGTERM', () => {
-  console.debug('SIGTERM signal received: closing server');
-  server.close(() => {
-    console.log('Server closed');
-    process.exit();
-  })
+process.on("SIGTERM", () => {
+    console.debug("SIGTERM signal received: closing server");
+    server.close(() => {
+        console.log("Server closed");
+        process.exit();
+    })
 })
 
 export default server;

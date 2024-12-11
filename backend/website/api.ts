@@ -19,6 +19,7 @@ export function loadAPI() {
         const stat = fs.statSync(source);
         if (stat && stat.isFile() && file.endsWith(".js")) {
             log.info("Loading API from %s", file);
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
             require(source);
         }
     });
