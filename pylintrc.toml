@@ -273,7 +273,7 @@ max-locals = 15
 max-parents = 7
 
 # Maximum number of positional arguments for function / method.
-max-positional-arguments = 5
+# max-positional-arguments = 5
 
 # Maximum number of public methods for a class (see R0904).
 max-public-methods = 20
@@ -289,7 +289,8 @@ min-public-methods = 2
 
 [tool.pylint.exceptions]
 # Exceptions that will emit a warning when caught.
-overgeneral-exceptions = ["builtins.BaseException", "builtins.Exception"]
+# overgeneral-exceptions = ["builtins.BaseException", "builtins.Exception"]
+overgeneral-exceptions = ["builtins.BaseException"]
 
 [tool.pylint.format]
 # Expected format of line ending, e.g. empty (any line ending), LF or CRLF.
@@ -549,5 +550,3 @@ ignored-argument-names = "_.*|^ignored_|^unused_"
 # List of qualified module names which can have objects that can redefine
 # builtins.
 redefining-builtins-modules = ["six.moves", "past.builtins", "future.builtins", "builtins", "io"]
-
-
