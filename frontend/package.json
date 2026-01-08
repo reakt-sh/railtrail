@@ -28,26 +28,26 @@
         "@capacitor/core": "^6.2.0",
         "@capacitor/ios": "^6.2.0",
         "@maplibre/ngx-maplibre-gl": "^21.0.1",
-        "@turf/turf": "^7.1.0",
+        "@turf/turf": "^7.3.1",
         "loglevel": "^1.9.2",
         "maplibre-gl": "^5.0.0",
-        "rxjs": "~7.8.0",
+        "rxjs": "~7.8.2",
         "tslib": "^2.3.0",
-        "zone.js": "^0.15.0"
+        "zone.js": "^0.16.0"
     },
     "devDependencies": {
         "@angular/build": "^21.0.5",
         "@angular/cli": "^21.0.5",
         "@angular/compiler-cli": "^21.0.7",
         "@angular/localize": "^21.0.7",
-        "@capacitor/cli": "^6.2.0",
+        "@capacitor/cli": "^7.4.4",
         "@eslint/js": "^9.13.0",
         "@types/eslint__js": "^8.42.3",
-        "@types/jasmine": "~5.1.0",
-        "angular-eslint": "19.0.0",
+        "@types/jasmine": "~5.1.13",
+        "angular-eslint": "21.1.0",
         "eslint": "^9.16.0",
-        "jasmine-core": "~5.1.0",
-        "json-schema-to-typescript": "^15.0.3",
+        "jasmine-core": "~5.13.0",
+        "json-schema-to-typescript": "^15.0.4",
         "karma": "~6.4.0",
         "karma-chrome-launcher": "~3.2.0",
         "karma-coverage": "~2.2.0",
@@ -55,6 +55,6 @@
         "karma-jasmine-html-reporter": "~2.1.0",
         "source-map-explorer": "^2.5.3",
         "typescript": "~5.9.3",
-        "typescript-eslint": "8.10.0"
+        "typescript-eslint": "8.52.0"
     }
 }
