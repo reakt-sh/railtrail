@@ -1,6 +1,8 @@
 <div role="main" class="container">
     <h1 i18n>Authentication Required!</h1>
-    <span *ngIf="logout" i18n>Successfully logged out.</span>
+    @if (logout) {
+    <span i18n>Successfully logged out.</span>
+    }
     <mat-form-field appearance="outline" (onsubmit)="sendLogin()">
         <mat-label i18n>Password</mat-label>
         <input matInput [formControl]="passwordForm" (blur)="updateErrorMessage()" (keyup.enter)="sendLogin()"
@@ -23,5 +25,7 @@
         </div>
         <button i18n mat-stroked-button class="login-btn" (click)="sendLogin()">Log in</button>
     </div>
-    <span *ngIf="failed()" class="error" i18n>Login failed.</span>
+    @if (failed()) {
+    <span class="error" i18n>Login failed.</span>
+    }
 </div>

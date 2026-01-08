@@ -41,7 +41,9 @@
                 <td mat-cell *matCellDef="let element">
                     <div>
                         <mat-chip-set>
-                            <mat-chip *ngFor="let item of element.trackers">{{item.deviceID}}</mat-chip>
+                            @for (item of element.trackers; track item) {
+                            <mat-chip>{{item.deviceID}}</mat-chip>
+                            }
                         </mat-chip-set>
                     </div>
                 </td>
@@ -79,26 +81,40 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
-        <mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
-        <mat-divider *ngIf="edit"></mat-divider>
-        <button *ngIf="edit" mat-icon-button (click)="addNewRow()">
+        @if (!loaded) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+        @if (edit) {
+        <mat-divider></mat-divider>
+        }
+        @if (edit) {
+        <button mat-icon-button (click)="addNewRow()">
             <mat-icon>add_box</mat-icon>
         </button>
+        }
     </div>
 
     <div class="below-table">
-        <button i18n mat-stroked-button *ngIf="!edit && auth.isLoggedInAsAdmin()" (click)="enterEditMode()">Edit
+        @if (!edit && auth.isLoggedInAsAdmin()) {
+        <button i18n mat-stroked-button (click)="enterEditMode()">Edit
             Vehicles and Tracker Assignment</button>
+        }
 
-        <div *ngIf="edit">
+        @if (edit) {
+        <div>
             <button i18n mat-stroked-button (click)="sendVehicleListUpdate()">Save</button>
-            <h3 *ngIf="unassignedTrackers.length" i18n>Unassigned Trackers</h3>
-            <mat-chip-set *ngIf="unassignedTrackers.length">
+            @if (unassignedTrackers.length) {
+            <h3 i18n>Unassigned Trackers</h3>
+            }
+            @if (unassignedTrackers.length) {
+            <mat-chip-set>
                 @for (tracker of unassignedTrackers; track tracker) {
                 <mat-chip>{{tracker.deviceID}}</mat-chip>
                 }
             </mat-chip-set>
+            }
         </div>
+        }
     </div>
 
 </div>
