@@ -27,7 +27,7 @@
         "@capacitor/angular": "^2.0.3",
         "@capacitor/core": "^6.2.0",
         "@capacitor/ios": "^6.2.0",
-        "@maplibre/ngx-maplibre-gl": "^20.1.1",
+        "@maplibre/ngx-maplibre-gl": "^21.0.1",
         "@turf/turf": "^7.1.0",
         "loglevel": "^1.9.2",
         "maplibre-gl": "^5.0.0",

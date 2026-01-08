@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { MapComponent as LibreMapComponent } from "@maplibre/ngx-maplibre-gl";
+import { NgxMapLibreGLModule, MapComponent as LibreMapComponent } from "@maplibre/ngx-maplibre-gl";
 import { Logger } from "loglevel";
 import { Map, StyleSpecification } from "maplibre-gl";
 import { RailLine } from "../../../schema-gen/railline";
@@ -11,7 +11,7 @@ import { RailLineService } from "./logic/rail-line.service";
 
 @Component({
     selector: "app-map",
-    imports: [LibreMapComponent],
+    imports: [NgxMapLibreGLModule],
     templateUrl: "./map.component.html",
     styleUrl: "./map.component.scss"
 })
@@ -57,7 +57,7 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.mapComp.mapLoad.subscribe((m) => this.initMap(m));
+        this.mapComp.mapLoad.subscribe((m: Map) => this.initMap(m));
     }
 
     ngOnDestroy(): void {

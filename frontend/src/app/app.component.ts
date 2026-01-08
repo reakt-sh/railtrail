@@ -41,8 +41,8 @@ export class AppComponent implements OnInit, DoCheck, AfterViewChecked {
     ngAfterViewChecked() {
     }
 
-    @HostListener("window:resize", ["$event.target.innerHeight", "$event.target.innerWidth"])
-    onResize(height: number, width: number) {
+    @HostListener("window:resize", ["$event.target"])
+    onResize(target: EventTarget | null) {
         this.layout.updateWindowSize(window.innerHeight, window.innerWidth, true);
 
         if (this.layout.sideBySide) {
