@@ -27,34 +27,38 @@ BKE_POS_VENV_DIR = join(BKE_POS_DIR, ".venv")
 BKE_WEB_DIR = join(ROOT_DIR, "backend", "website")
 FTE_DIR = join(ROOT_DIR, "frontend")
 
+args: argparse.Namespace
 
 def init():
-    print("# Init positioning backend")
+    if not args.no_positioning:
+        print("# Init positioning backend")
 
-    print("## Setting up Python virtual environment")
-    if sys.version_info[1] < 13:
-        print("ERROR: Python virtual environment must be set up with Python 3.13+ to match runtime environment!")
-        sys.exit(-1)
-    venv.create(BKE_POS_VENV_DIR, clear=False, with_pip=True)
+        print("## Setting up Python virtual environment")
+        if sys.version_info[1] < 13:
+            print("ERROR: Python virtual environment must be set up with Python 3.13+ to match runtime environment!")
+            sys.exit(-1)
+        venv.create(BKE_POS_VENV_DIR, clear=False, with_pip=True)
 
-    print("## Installing Python dependencies")
-    run_cmd(
-        [join(BKE_POS_VENV_DIR, "bin", "python"), "-m", "pip", "install", "-v", "-r", "requirements.txt"],
-        cwd=BKE_POS_DIR,
-        env=dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR),
-    )
+        print("## Installing Python dependencies")
+        run_cmd(
+            [join(BKE_POS_VENV_DIR, "bin", "python"), "-m", "pip", "install", "-v", "-r", "requirements.txt"],
+            cwd=BKE_POS_DIR,
+            env=dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR),
+        )
 
-    if not exists(ROOT_VENV_DIR):
-        print("## Link venv to project root")
-        symlink(BKE_POS_VENV_DIR, ROOT_VENV_DIR, target_is_directory=True)
+        if not exists(ROOT_VENV_DIR):
+            print("## Link venv to project root")
+            symlink(BKE_POS_VENV_DIR, ROOT_VENV_DIR, target_is_directory=True)
 
-    print("# Init website backend")
-    print("## Installing NPM dependencies")
-    run_cmd(["npm", "install"], cwd=BKE_WEB_DIR)
+    if not args.no_website:
+        print("# Init website backend")
+        print("## Installing NPM dependencies")
+        run_cmd(["npm", "install"], cwd=BKE_WEB_DIR)
 
-    print("# Init frontend")
-    print("## Installing NPM dependencies")
-    run_cmd(["npm", "install"], cwd=FTE_DIR)
+    if not args.no_frontend:
+        print("# Init frontend")
+        print("## Installing NPM dependencies")
+        run_cmd(["npm", "install"], cwd=FTE_DIR)
 
     print("# Initial update of DB schemas")
     update_db_schemas()
@@ -65,72 +69,78 @@ def init():
 
 def update_db_schemas():
     # Python
-    print("## Updating Python client")
-    gen_dir = join(DEV_DIR, "gen", "python")
-    if not isdir(gen_dir):
-        makedirs(gen_dir)
+    if not args.no_positioning:
+        print("## Updating Python client")
+        gen_dir = join(DEV_DIR, "gen", "python")
+        if not isdir(gen_dir):
+            makedirs(gen_dir)
 
-    gen_schema = join(gen_dir, "schema.prisma")
-    with open(gen_schema, "w") as out:
-        with open(join(DB_SCHEMA_DIR, "python.prisma"), "r") as header:
-            out.write(header.read())
-        with open(join(DB_SCHEMA_DIR, "model.prisma"), "r") as model:
-            out.write(model.read())
+        gen_schema = join(gen_dir, "schema.prisma")
+        with open(gen_schema, "w") as out:
+            with open(join(DB_SCHEMA_DIR, "python.prisma"), "r") as header:
+                out.write(header.read())
+            with open(join(DB_SCHEMA_DIR, "model.prisma"), "r") as model:
+                out.write(model.read())
 
-    run_cmd(
-        [join(BKE_POS_VENV_DIR, "bin", "prisma"), "generate", "--schema=" + gen_schema],
-        cwd=gen_dir,
-        env=dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
-    )
+        run_cmd(
+            [join(BKE_POS_VENV_DIR, "bin", "prisma"), "generate", "--schema=" + gen_schema],
+            cwd=gen_dir,
+            env=dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
+        )
+
 
     # Node
-    print("## Updating NodeJS client")
-    gen_dir = join(DEV_DIR, "gen", "node")
-    if not isdir(gen_dir):
-        makedirs(gen_dir)
+    if not args.no_website:
+        print("## Updating NodeJS client")
+        gen_dir = join(DEV_DIR, "gen", "node")
+        if not isdir(gen_dir):
+            makedirs(gen_dir)
 
-    gen_schema = join(gen_dir, "schema.prisma")
-    with open(gen_schema, "w") as out:
-        with open(join(ROOT_DIR, "database", "node.prisma"), "r") as header:
-            out.write(header.read())
-        with open(join(ROOT_DIR, "database", "model.prisma"), "r") as model:
-            out.write(model.read())
+        gen_schema = join(gen_dir, "schema.prisma")
+        with open(gen_schema, "w") as out:
+            with open(join(ROOT_DIR, "database", "node.prisma"), "r") as header:
+                out.write(header.read())
+            with open(join(ROOT_DIR, "database", "model.prisma"), "r") as model:
+                out.write(model.read())
 
-    tmp_schema = join(BKE_WEB_DIR, "schema.prisma")
-    if isfile(tmp_schema):
+        tmp_schema = join(BKE_WEB_DIR, "schema.prisma")
+        if isfile(tmp_schema):
+            remove(tmp_schema)
+        copyfile(gen_schema, tmp_schema)
+
+        run_cmd(["npx", "prisma", "generate"], cwd=BKE_WEB_DIR)
+
         remove(tmp_schema)
-    copyfile(gen_schema, tmp_schema)
-
-    run_cmd(["npx", "prisma", "generate"], cwd=BKE_WEB_DIR)
-
-    remove(tmp_schema)
 
 
 def update_json_schemas():
     # Python
-    print("## Updating Python data schemas")
-    run_cmd(
-        [
-            join(BKE_POS_VENV_DIR, "bin", "datamodel-codegen"),
-            "--input",
-            DATA_SCHEMA_DIR,
-            "--input-file-type",
-            "jsonschema",
-            "--output",
-            join(BKE_POS_DIR, "schema_gen"),
-            "--output-model-type",
-            "pydantic_v2.BaseModel",
-        ],
-        cwd=BKE_POS_DIR,
-        env=dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
-    )
+    if not args.no_positioning:
+        print("## Updating Python data schemas")
+        run_cmd(
+            [
+                join(BKE_POS_VENV_DIR, "bin", "datamodel-codegen"),
+                "--input",
+                DATA_SCHEMA_DIR,
+                "--input-file-type",
+                "jsonschema",
+                "--output",
+                join(BKE_POS_DIR, "schema_gen"),
+                "--output-model-type",
+                "pydantic_v2.BaseModel",
+            ],
+            cwd=BKE_POS_DIR,
+            env=dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
+        )
 
     # TS code
-    print("## Updating TypeScript data schemas for backend")
-    run_cmd(["npx", "json2ts", "-i", DATA_SCHEMA_DIR, "-o", join(BKE_WEB_DIR, "schema-gen"), "--cwd", DATA_SCHEMA_DIR, "--enableConstEnums", "true"], cwd=BKE_WEB_DIR)
+    if not args.no_website:
+        print("## Updating TypeScript data schemas for backend")
+        run_cmd(["npx", "json2ts", "-i", DATA_SCHEMA_DIR, "-o", join(BKE_WEB_DIR, "schema-gen"), "--cwd", DATA_SCHEMA_DIR, "--enableConstEnums", "true"], cwd=BKE_WEB_DIR)
 
-    print("## Updating TypeScript data schemas for frontend")
-    run_cmd(["npx", "json2ts", "-i", DATA_SCHEMA_DIR, "-o", join(FTE_DIR, "schema-gen"), "--cwd", DATA_SCHEMA_DIR, "--enableConstEnums", "true"], cwd=FTE_DIR)
+    if not args.no_frontend:
+        print("## Updating TypeScript data schemas for frontend")
+        run_cmd(["npx", "json2ts", "-i", DATA_SCHEMA_DIR, "-o", join(FTE_DIR, "schema-gen"), "--cwd", DATA_SCHEMA_DIR, "--enableConstEnums", "true"], cwd=FTE_DIR)
 
 
 def update_schemas():
@@ -242,9 +252,12 @@ ACTIONS = {
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(description="Script to handle development tasks in the project.")
     arg_parser.add_argument("-v", "--verbose", action="store_true", help="increase output verbosity")
+    arg_parser.add_argument("--no-positioning", action="store_true", help="deactivate positioning backend generation")
+    arg_parser.add_argument("--no-website", action="store_true", help="deactivate website backend generation")
+    arg_parser.add_argument("--no-frontend", action="store_true", help="deactivate frontend generation")
     arg_parser.add_argument("actions", nargs="+", choices=ACTIONS.keys(), help="the action(s) to perform")
 
-    global args
+    # Parse
     args = arg_parser.parse_args()
 
     try:
