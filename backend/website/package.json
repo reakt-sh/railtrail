@@ -34,7 +34,7 @@
         "@types/debug": "^4.1.12",
         "@types/deep-equal": "^1.0.4",
         "@types/errorhandler": "^1.5.3",
-        "@types/eslint__js": "^8.42.3",
+        "@types/eslint__js": "^9.14.0",
         "@types/express": "^5.0.6",
         "@types/express-session": "^1.18.2",
         "@types/node": "^24.10.4",
