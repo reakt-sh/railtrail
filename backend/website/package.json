@@ -42,7 +42,7 @@
         "@types/passport-local": "^1.0.38",
         "eslint": "^9.39.2",
         "json-schema-to-typescript": "^15.0.4",
-        "prisma": "^5.22.0",
+        "prisma": "^7.2.0",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.52.0"
     }
