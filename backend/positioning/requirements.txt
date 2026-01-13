@@ -1,7 +1,7 @@
 prisma==0.15.*
 fastapi==0.128.*
 uvicorn[standard]==0.40.*
-datamodel-code-generator==0.52.*
+datamodel-code-generator==0.53.*
 jsonschema==4.26.*
 python-dateutil==2.9.*
 geojson==3.2.*
