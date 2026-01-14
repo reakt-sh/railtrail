@@ -31,7 +31,7 @@ jobs:
 
       - name: Generate schema code
         working-directory: ./dev
-        run: python dev.py update --no-website --no-frontend
+        run: python dev.py update --no-venv --no-website --no-frontend
 
       - name: Linting
         working-directory: ./backend/positioning
@@ -99,7 +99,7 @@ jobs:
 
       - name: Generate schema code
         working-directory: ./dev
-        run: python dev.py update --no-positioning --no-frontend
+        run: python dev.py update --no-venv --no-positioning --no-frontend
 
       - name: Linting
         working-directory: ./backend/website
@@ -146,7 +146,7 @@ jobs:
 
       - name: Generate schema code
         working-directory: ./dev
-        run: python dev.py update --no-website --no-positioning
+        run: python dev.py update --no-venv --no-website --no-positioning
 
       - name: Build
         working-directory: ./frontend
