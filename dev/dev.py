@@ -13,7 +13,6 @@ from os import makedirs, environ, remove, symlink
 from os.path import join, isdir, isfile, abspath, dirname, exists
 from subprocess import run, Popen
 from shutil import copyfile, copytree, rmtree
-from dotenv import load_dotenv
 
 DEV_DIR = abspath(dirname(__file__))
 ROOT_DIR = dirname(DEV_DIR)
@@ -218,7 +217,11 @@ def db_migrate():
     copytree(join(DB_SCHEMA_DIR, "migrations"), migrations_dir, dirs_exist_ok=True)
 
     # Apply developer env
-    load_dotenv(dotenv_path=join(DEV_DIR, ".env"))
+    try:
+        from dotenv import load_dotenv # pylint: disable=import-outside-toplevel
+        load_dotenv(dotenv_path=join(DEV_DIR, ".env"))
+    except ModuleNotFoundError:
+        print("Error: Python module dotenv not found, please run this script in the virtual environment setup by this script.")
 
     # Generate
     print("## Generating migration file")
