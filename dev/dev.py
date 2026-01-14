@@ -33,20 +33,24 @@ def init():
     if not args.no_positioning:
         print("# Init positioning backend")
 
-        print("## Setting up Python virtual environment")
-        if sys.version_info[1] < 13:
-            print("ERROR: Python virtual environment must be set up with Python 3.13+ to match runtime environment!")
-            sys.exit(-1)
-        venv.create(BKE_POS_VENV_DIR, clear=False, with_pip=True)
+        if not args.no_venv:
+            print("## Setting up Python virtual environment")
+            if sys.version_info[1] < 13:
+                print("ERROR: Python virtual environment must be set up with Python 3.13+ to match runtime environment!")
+                sys.exit(-1)
+            venv.create(BKE_POS_VENV_DIR, clear=False, with_pip=True)
 
         print("## Installing Python dependencies")
         run_cmd(
-            [join(BKE_POS_VENV_DIR, "bin", "python"), "-m", "pip", "install", "-v", "-r", "requirements.txt"],
+            [
+                "python" if args.no_venv else join(BKE_POS_VENV_DIR, "bin", "python"),
+                "-m", "pip", "install", "-v", "-r", "requirements.txt"
+            ],
             cwd=BKE_POS_DIR,
-            env=dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR),
+            env=environ if args.no_venv else dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR),
         )
 
-        if not exists(ROOT_VENV_DIR):
+        if not args.no_venv and not exists(ROOT_VENV_DIR):
             print("## Link venv to project root")
             symlink(BKE_POS_VENV_DIR, ROOT_VENV_DIR, target_is_directory=True)
 
@@ -83,9 +87,12 @@ def update_db_schemas():
                 out.write(model.read())
 
         run_cmd(
-            [join(BKE_POS_VENV_DIR, "bin", "prisma"), "generate", "--schema=" + gen_schema],
+            [
+                "prisma" if args.no_venv else join(BKE_POS_VENV_DIR, "bin", "prisma"),
+                "generate", "--schema=" + gen_schema
+            ],
             cwd=gen_dir,
-            env=dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
+            env=environ if args.no_venv else dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
         )
 
 
@@ -119,7 +126,7 @@ def update_json_schemas():
         print("## Updating Python data schemas")
         run_cmd(
             [
-                join(BKE_POS_VENV_DIR, "bin", "datamodel-codegen"),
+                "datamodel-codegen" if args.no_venv else join(BKE_POS_VENV_DIR, "bin", "datamodel-codegen"),
                 "--input",
                 DATA_SCHEMA_DIR,
                 "--input-file-type",
@@ -130,7 +137,7 @@ def update_json_schemas():
                 "pydantic_v2.BaseModel",
             ],
             cwd=BKE_POS_DIR,
-            env=dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
+            env=environ if args.no_venv else dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
         )
 
     # TS code
@@ -165,7 +172,7 @@ def start_all():
         pos = Popen(
             ["python", "main.py"],
             cwd=BKE_POS_DIR,
-            env=dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
+            env=environ if args.no_venv else dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
         )
         web = Popen(["npm", "run", "start"], cwd=BKE_WEB_DIR)
 
@@ -216,9 +223,12 @@ def db_migrate():
     # Generate
     print("## Generating migration file")
     run_cmd(
-        [join(BKE_POS_VENV_DIR, "bin", "prisma"), "migrate", "dev"],
+        [
+            "prisma" if args.no_venv else join(BKE_POS_VENV_DIR, "bin", "prisma"),
+            "migrate", "dev"
+        ],
         cwd=gen_dir,
-        env=dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
+        env=environ if args.no_venv else dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
     )
 
     # Copy result
@@ -255,6 +265,7 @@ if __name__ == "__main__":
     arg_parser.add_argument("--no-positioning", action="store_true", help="deactivate positioning backend generation")
     arg_parser.add_argument("--no-website", action="store_true", help="deactivate website backend generation")
     arg_parser.add_argument("--no-frontend", action="store_true", help="deactivate frontend generation")
+    arg_parser.add_argument("--no-venv", action="store_true", help="deactivate using Python virtual environment")
     arg_parser.add_argument("actions", nargs="+", choices=ACTIONS.keys(), help="the action(s) to perform")
 
     # Parse
