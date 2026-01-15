@@ -14,7 +14,6 @@ jobs:
   backend-positioning:
     name: Check Positioning Backend
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -33,6 +32,9 @@ jobs:
         working-directory: ./dev
         run: python dev.py update --no-venv --no-website --no-frontend
 
+      - name: Install linter
+        run: pip install pylint
+
       - name: Linting
         working-directory: ./backend/positioning
         run: pylint --rcfile=../../pylintrc.toml -j 0 **/*.py
@@ -40,8 +42,6 @@ jobs:
   docker-backend-positioning:
     name: Check Positioning Backend Docker
     runs-on: ubuntu-latest
-    needs:
-      - backend-positioning
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -61,8 +61,6 @@ jobs:
   docker-backend-db-migration:
     name: Check DB Migration Docker
     runs-on: ubuntu-latest
-    needs:
-      - docker-backend-positioning
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -83,7 +81,6 @@ jobs:
   backend-website:
     name: Check Website Backend
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -108,8 +105,6 @@ jobs:
   docker-backend-website:
     name: Check Website Backend Docker
     runs-on: ubuntu-latest
-    needs:
-      - backend-website
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -130,7 +125,6 @@ jobs:
   frontend-website:
     name: Check Website Frontend
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
