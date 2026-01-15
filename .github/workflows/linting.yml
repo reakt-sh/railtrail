@@ -34,7 +34,7 @@ jobs:
 
       - name: Lint
         working-directory: ./backend/positioning
-        run: pylint --rcfile=../../pylintrc.toml -j 0 **/*.py
+        run: pylint --rcfile=../../pylintrc.toml -j 0 --output-format=github **/*.py
 
   lint-backend-website:
     name: Lint Website Backend
