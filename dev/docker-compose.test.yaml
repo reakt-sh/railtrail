@@ -1,0 +1,69 @@
+version: "3.9"
+name: railtrail-test
+
+services:
+    database:
+        image: postgres:15-alpine
+        healthcheck:
+            test: netstat -an | grep 5432
+            start_period: 1m
+        environment:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PWD}
+            POSTGRES_DB: ${DB_NAME}
+        expose:
+            - 5432
+
+    migration:
+        build:
+            context: ..
+            dockerfile: Dockerfile.migration
+        environment:
+            DB_URL: ${DB_URL}
+        depends_on:
+            database:
+                condition: service_healthy
+
+    backend-positioning:
+        build:
+            context: ..
+            dockerfile: Dockerfile.positioning
+        healthcheck:
+            test: wget --no-verbose --tries=1 http://localhost:5010/alive || exit 1
+            start_period: 30s
+        environment:
+            HOST: "0.0.0.0"
+            PORT: 5010
+            DB_URL: ${DB_URL}
+            API_KEY: ${POS_API_KEY}
+            DEFAULT_LINE: ${DEFAULT_LINE}
+        expose:
+            - 5010
+        depends_on:
+            migration:
+                condition: service_completed_successfully
+
+    backend-website:
+        build:
+            context: ..
+            dockerfile: Dockerfile.website
+        healthcheck:
+            test: wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
+            start_period: 30s
+        environment:
+            NODE_ENV: production
+            DB_URL: ${DB_URL}
+            SESSION_SECRET: ${SESSION_SECRET}
+            DEFAULT_LINE: ${DEFAULT_LINE}
+            PW_OPERATOR: ${PW_OPERATOR}
+            PW_ADMIN: ${PW_ADMIN}
+            POS_API_HOST: backend-positioning
+            POS_API_PORT: 5010
+            POS_API_KEY: ${POS_API_KEY}
+            PORT: 3000
+        expose:
+            - 3000
+        depends_on:
+            migration:
+                condition: service_completed_successfully
+

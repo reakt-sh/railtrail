@@ -156,7 +156,7 @@ def update_schemas():
 
 def start_all():
     print("# Starting database")
-    run_cmd(["docker", "compose", "up", "-d"], cwd=DEV_DIR)
+    run_cmd(["docker", "compose", "-f", "docker-compose.db.yml", "up", "-d"], cwd=DEV_DIR)
 
     print("# Building frontend")
     run_cmd(["npm", "run", "debug-build"], cwd=FTE_DIR)

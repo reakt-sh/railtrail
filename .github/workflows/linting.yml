@@ -1,18 +1,15 @@
-name: Continuous Integration
+name: Linting
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "*" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch: # manual triggering, for debugging purposes
 
-env:
-  TEST_TAG: user/app:test
-
 jobs:
-  backend-positioning:
-    name: Check Positioning Backend
+  lint-backend-positioning:
+    name: Lint Positioning Backend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -35,51 +32,12 @@ jobs:
       - name: Install linter
         run: pip install pylint
 
-      - name: Linting
+      - name: Lint
         working-directory: ./backend/positioning
         run: pylint --rcfile=../../pylintrc.toml -j 0 **/*.py
 
-  docker-backend-positioning:
-    name: Check Positioning Backend Docker
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and export to Docker
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile.positioning
-          push: false
-          load: true
-          tags: ${{ env.TEST_TAG }}
-
-  docker-backend-db-migration:
-    name: Check DB Migration Docker
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and export to Docker
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile.migration
-          push: false
-          load: true
-          tags: ${{ env.TEST_TAG }}
-
-
-  backend-website:
-    name: Check Website Backend
+  lint-backend-website:
+    name: Lint Website Backend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -98,32 +56,12 @@ jobs:
         working-directory: ./dev
         run: python dev.py update --no-venv --no-positioning --no-frontend
 
-      - name: Linting
+      - name: Lint
         working-directory: ./backend/website
         run: npm run lint
 
-  docker-backend-website:
-    name: Check Website Backend Docker
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and export to Docker
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile.website
-          push: false
-          load: true
-          tags: ${{ env.TEST_TAG }}
-
-
-  frontend-website:
-    name: Check Website Frontend
+  lint-frontend-website:
+    name: Lint Website Frontend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -146,6 +84,6 @@ jobs:
         working-directory: ./frontend
         run: npm run build
 
-      - name: Linting
+      - name: Lint
         working-directory: ./frontend
         run: npm run lint
