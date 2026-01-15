@@ -18,30 +18,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Start database
+      - name: Build and start docker containers
         working-directory: ./dev
-        run: docker compose -f docker-compose.db.yml up -d
-
-      - name: Apply database schema
         run: |
-          . .venv/bin/activate
-          python dev/dev.py migrate
-
-      - name: Start positioning server
-        working-directory: ./backend/positioning
-        run: |
-          . .venv/bin/activate
-          python main.py &
-          sleep 10
+          docker compose -f docker-compose.test.yaml --parallel 1 up -d --build
+          sleep 15
 
       - name: Test positioning server availability
         run: wget --no-verbose --tries=1 http://localhost:5010/alive
-
-      - name: Start website server
-        working-directory: ./backend/website
-        run: |
-          npm run start &
-          sleep 10
 
       - name: Test website server availability
         run: wget --no-verbose --tries=1 --spider http://localhost:3000

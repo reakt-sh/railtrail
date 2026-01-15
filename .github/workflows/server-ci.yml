@@ -38,7 +38,7 @@ jobs:
 
       - name: Start database
         working-directory: ./dev
-        run: docker-compose -f docker-compose.db.yml up -d
+        run: docker-compose -f docker-compose.db.yaml up -d
 
       - name: Apply database schema
         run: |
