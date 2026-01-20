@@ -39,6 +39,8 @@ services:
             DEFAULT_LINE: ${DEFAULT_LINE}
         expose:
             - 5010
+        ports:
+            - "5010:5010"
         depends_on:
             migration:
                 condition: service_completed_successfully
@@ -63,6 +65,8 @@ services:
             PORT: 3000
         expose:
             - 3000
+        ports:
+            - "3000:3000"
         depends_on:
             migration:
                 condition: service_completed_successfully
