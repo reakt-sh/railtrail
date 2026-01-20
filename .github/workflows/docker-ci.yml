@@ -21,7 +21,7 @@ jobs:
       - name: Build and start docker containers
         working-directory: ./dev
         run: |
-          docker compose -f docker-compose.test.yaml --parallel 1 up -d --build
+          docker compose -f docker-compose.test.yaml --parallel 1 --progress plain up -d --build
           sleep 15
 
       - name: Test positioning server availability

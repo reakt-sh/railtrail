@@ -19,7 +19,7 @@ services:
             context: ..
             dockerfile: Dockerfile.migration
         environment:
-            DB_URL: ${DB_URL}
+            DB_URL: ${DB_URL_TEST_SYSTEM}
         depends_on:
             database:
                 condition: service_healthy
@@ -34,7 +34,7 @@ services:
         environment:
             HOST: "0.0.0.0"
             PORT: 5010
-            DB_URL: ${DB_URL}
+            DB_URL: ${DB_URL_TEST_SYSTEM}
             API_KEY: ${POS_API_KEY}
             DEFAULT_LINE: ${DEFAULT_LINE}
         expose:
@@ -52,7 +52,7 @@ services:
             start_period: 30s
         environment:
             NODE_ENV: production
-            DB_URL: ${DB_URL}
+            DB_URL: ${DB_URL_TEST_SYSTEM}
             SESSION_SECRET: ${SESSION_SECRET}
             DEFAULT_LINE: ${DEFAULT_LINE}
             PW_OPERATOR: ${PW_OPERATOR}
