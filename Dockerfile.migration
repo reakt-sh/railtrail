@@ -11,5 +11,8 @@ COPY ./database/model.prisma ./schema.prisma
 # Migration data
 COPY ./database/migrations ./migrations
 
+# Fix for older prisma versions that fail to detect the libssl/openssl version (https://github.com/prisma/prisma/issues/25817)
+RUN ln -s /usr/lib/libssl.so.3 /lib/libssl.so.3
+
 # Perform migration
 CMD ["npx", "prisma", "migrate", "deploy"]

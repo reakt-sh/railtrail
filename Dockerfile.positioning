@@ -8,6 +8,8 @@ RUN pip install -r requirements.txt
 # Database
 COPY ./database ./db-src
 RUN cat "./db-src/python.prisma" "./db-src/model.prisma" > schema.prisma
+# Fix for older prisma versions that fail to detect the libssl/openssl version (https://github.com/prisma/prisma/issues/25817)
+RUN ln -s /usr/lib/libssl.so.3 /lib/libssl.so.3
 RUN prisma generate
 
 # Server code
