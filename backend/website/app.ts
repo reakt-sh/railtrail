@@ -117,7 +117,7 @@ app.post("/api/auth/login-role", (req, res, next) => {
 loadAPI();
 app.use("/api", apiRouter);
 // Fail for other api routes
-app.all("/api/*", authOperatorGuard, (req, res, next) => {
+app.all("/api/*route", authOperatorGuard, (req, res, next) => {
     res.status(404).end();
 });
 
@@ -127,7 +127,7 @@ app.use(express.static(path.join(__dirname, frontendPath), config.staticRoute));
 
 // Catch all other routes and return the index file (Angular routing!)
 // PUBLIC -> no authGuard
-app.get("*", (req, res) => {
+app.get("*route", (req, res) => {
     res.sendFile(path.join(__dirname, frontendPath + "/index.html"));
 });
 
