@@ -1,31 +1,31 @@
 name: Continuous Integration Docker
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-  workflow_dispatch: # manual triggering, for debugging purposes
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+    workflow_dispatch: # manual triggering, for debugging purposes
 
 jobs:
-  run-docker:
-    name: Compose and run server in docker
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+    run-docker:
+        name: Compose and run server in docker
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
 
-      - name: Build and start docker containers
-        working-directory: ./dev
-        run: |
-          docker compose -f docker-compose.test.yaml --parallel 1 --progress plain up -d --build
-          sleep 15
+            - name: Build and start docker containers
+              working-directory: ./dev
+              run: |
+                  docker compose -f docker-compose.test.yaml --parallel 1 --progress plain up -d --build
+                  sleep 15
 
-      - name: Test positioning server availability
-        run: wget --no-verbose --tries=1 http://localhost:5010/alive
+            - name: Test positioning server availability
+              run: wget --no-verbose --tries=1 http://localhost:5010/alive
 
-      - name: Test website server availability
-        run: wget --no-verbose --tries=1 --spider http://localhost:3000
+            - name: Test website server availability
+              run: wget --no-verbose --tries=1 --spider http://localhost:3000

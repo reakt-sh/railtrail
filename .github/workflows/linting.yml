@@ -1,89 +1,89 @@
 name: Linting
 
 on:
-  push:
-    branches: [ "*" ]
-  pull_request:
-    branches: [ "main" ]
-  workflow_dispatch: # manual triggering, for debugging purposes
+    push:
+        branches: ["*"]
+    pull_request:
+        branches: ["main"]
+    workflow_dispatch: # manual triggering, for debugging purposes
 
 jobs:
-  lint-backend-positioning:
-    name: Lint Positioning Backend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+    lint-backend-positioning:
+        name: Lint Positioning Backend
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          cache: "pip" # caching pip dependencies
+            - name: Set up Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: "3.13"
+                  cache: "pip" # caching pip dependencies
 
-      - name: Install dependencies
-        working-directory: ./backend/positioning
-        run: pip install -r requirements.txt
+            - name: Install dependencies
+              working-directory: ./backend/positioning
+              run: pip install -r requirements.txt
 
-      - name: Generate schema code
-        working-directory: ./dev
-        run: python dev.py update --no-venv --no-website --no-frontend
+            - name: Generate schema code
+              working-directory: ./dev
+              run: python dev.py update --no-venv --no-website --no-frontend
 
-      - name: Install linter
-        run: pip install pylint
+            - name: Install linter
+              run: pip install pylint
 
-      - name: Lint
-        working-directory: ./backend/positioning
-        run: pylint --rcfile=../../pylintrc.toml -j 0 --output-format=github **/*.py
+            - name: Lint
+              working-directory: ./backend/positioning
+              run: pylint --rcfile=../../pylintrc.toml -j 0 --output-format=github **/*.py
 
-  lint-backend-website:
-    name: Lint Website Backend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+    lint-backend-website:
+        name: Lint Website Backend
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
 
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
+            - name: Set up Node
+              uses: actions/setup-node@v6
+              with:
+                  node-version: 24
 
-      - name: Install dependencies
-        working-directory: ./backend/website
-        run: npm install
+            - name: Install dependencies
+              working-directory: ./backend/website
+              run: npm install
 
-      - name: Generate schema code
-        working-directory: ./dev
-        run: python dev.py update --no-venv --no-positioning --no-frontend
+            - name: Generate schema code
+              working-directory: ./dev
+              run: python dev.py update --no-venv --no-positioning --no-frontend
 
-      - name: Lint
-        working-directory: ./backend/website
-        run: npm run lint
+            - name: Lint
+              working-directory: ./backend/website
+              run: npm run lint
 
-  lint-frontend-website:
-    name: Lint Website Frontend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+    lint-frontend-website:
+        name: Lint Website Frontend
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
 
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
+            - name: Set up Node
+              uses: actions/setup-node@v6
+              with:
+                  node-version: 24
 
-      - name: Install dependencies
-        working-directory: ./frontend
-        run: npm install
+            - name: Install dependencies
+              working-directory: ./frontend
+              run: npm install
 
-      - name: Generate schema code
-        working-directory: ./dev
-        run: python dev.py update --no-venv --no-website --no-positioning
+            - name: Generate schema code
+              working-directory: ./dev
+              run: python dev.py update --no-venv --no-website --no-positioning
 
-      - name: Build
-        working-directory: ./frontend
-        run: npm run build
+            - name: Build
+              working-directory: ./frontend
+              run: npm run build
 
-      - name: Lint
-        working-directory: ./frontend
-        run: npm run lint
+            - name: Lint
+              working-directory: ./frontend
+              run: npm run lint
