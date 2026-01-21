@@ -1,0 +1,35 @@
+name: Release Docker Images
+
+on:
+  release:
+    types: [published,edited]
+  workflow_dispatch: # manual triggering, for debugging purposes
+
+permissions:
+    contents: read
+    packages: write
+    # This is used to complete the identity challenge
+    # with sigstore/fulcio when running outside of PRs.
+    id-token: write
+
+jobs:
+    release-positioning-backend:
+        uses: ./.github/workflows/do-deploy-docker.yml
+        with:
+            name: ${{ github.repository }}-server-positioning
+            file: Dockerfile.positioning
+            registry: ghcr.io
+
+    release-website-backend:
+        uses: ./.github/workflows/do-deploy-docker.yml
+        with:
+            name: ${{ github.repository }}-server-website
+            file: Dockerfile.website
+            registry: ghcr.io
+
+    release-db-migration:
+        uses: ./.github/workflows/do-deploy-docker.yml
+        with:
+            name: ${{ github.repository }}-server-db-migration
+            file: Dockerfile.migration
+            registry: ghcr.io
