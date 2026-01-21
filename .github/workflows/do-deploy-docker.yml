@@ -1,4 +1,4 @@
-name: Release Docker Image
+name: Release Single Docker Image (Reusable)
 
 on:
     workflow_call:
@@ -58,11 +58,3 @@ jobs:
                   provenance: false
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
-
-            - name: Clean container registry
-              uses: actions/delete-package-versions@v5
-              with:
-                  package-name: ${{ inputs.name }}
-                  package-type: "container"
-                  min-versions-to-keep: 10
-                  token: ${{ secrets.GITHUB_TOKEN }}

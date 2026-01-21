@@ -1,9 +1,9 @@
 name: Release Docker Images
 
 on:
-  release:
-    types: [published,edited]
-  workflow_dispatch: # manual triggering, for debugging purposes
+    release:
+        types: [published]
+    workflow_dispatch: # manual triggering, for debugging purposes
 
 permissions:
     contents: read
