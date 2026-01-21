@@ -9,6 +9,7 @@ if sys.version_info[0] < 3:
 
 import argparse
 import venv
+import re
 from os import makedirs, environ, remove, symlink
 from os.path import join, isdir, isfile, abspath, dirname, exists
 from subprocess import run, Popen
@@ -79,10 +80,10 @@ def update_db_schemas():
             makedirs(gen_dir)
 
         gen_schema = join(gen_dir, "schema.prisma")
-        with open(gen_schema, "w") as out:
-            with open(join(DB_SCHEMA_DIR, "python.prisma"), "r") as header:
+        with open(gen_schema, "w", encoding="utf-8") as out:
+            with open(join(DB_SCHEMA_DIR, "python.prisma"), "r", encoding="utf-8") as header:
                 out.write(header.read())
-            with open(join(DB_SCHEMA_DIR, "model.prisma"), "r") as model:
+            with open(join(DB_SCHEMA_DIR, "model.prisma"), "r", encoding="utf-8") as model:
                 out.write(model.read())
 
         run_cmd(
@@ -103,10 +104,10 @@ def update_db_schemas():
             makedirs(gen_dir)
 
         gen_schema = join(gen_dir, "schema.prisma")
-        with open(gen_schema, "w") as out:
-            with open(join(ROOT_DIR, "database", "node.prisma"), "r") as header:
+        with open(gen_schema, "w", encoding="utf-8") as out:
+            with open(join(ROOT_DIR, "database", "node.prisma"), "r", encoding="utf-8") as header:
                 out.write(header.read())
-            with open(join(ROOT_DIR, "database", "model.prisma"), "r") as model:
+            with open(join(ROOT_DIR, "database", "model.prisma"), "r", encoding="utf-8") as model:
                 out.write(model.read())
 
         tmp_schema = join(BKE_WEB_DIR, "schema.prisma")
@@ -238,6 +239,30 @@ def db_migrate():
     print("## Copy new migration")
     copytree(migrations_dir, join(DB_SCHEMA_DIR, "migrations"), dirs_exist_ok=True)
 
+def set_versions():
+    version = None
+    while not version:
+        version = input("Enter new version (e.g., 1.2.0): ").strip()
+        if not version or re.match(r"^\d+\.\d+\.\d+$", version) is None:
+            print("Invalid version format. Please use semantic versioning (e.g., x.x.x)!")
+            version = None
+
+    print("# Update frontend package version")
+    run_cmd(["npm", "--no-git-tag-version", "version", version], cwd=FTE_DIR)
+
+    print("# Update website backend package version")
+    run_cmd(["npm", "--no-git-tag-version", "version", version], cwd=BKE_WEB_DIR)
+
+    print("# Update positioning backend version")
+    version_file = join(BKE_POS_DIR, "version.py")
+    with open(version_file, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    with open(version_file, "w", encoding="utf-8") as vf:
+        for line in lines:
+            if line.strip().startswith("__version__"):
+                vf.write(f'__version__ = "{version}"\n')
+            else:
+                vf.write(line)
 
 ### Util ###
 
@@ -259,7 +284,8 @@ ACTIONS = {
     "update": update_schemas,
     "start": start_all,
     "deploy-android": deploy_android,
-    "migrate": db_migrate
+    "migrate": db_migrate,
+    "update-versions": set_versions,
 }
 
 if __name__ == "__main__":
