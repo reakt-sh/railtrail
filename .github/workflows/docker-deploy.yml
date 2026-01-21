@@ -1,0 +1,172 @@
+name: Release Docker Images
+
+on:
+    push:
+        tags:
+            - "v*.*.*"
+    workflow_dispatch: # manual triggering, for debugging purposes
+
+env:
+    # Use docker.io for Docker Hub if empty
+    REGISTRY: ghcr.io
+
+permissions:
+    contents: read
+    packages: write
+    # This is used to complete the identity challenge
+    # with sigstore/fulcio when running outside of PRs.
+    id-token: write
+
+jobs:
+    release-positioning-backend:
+        name: Release Positioning Server
+        runs-on: ubuntu-latest
+        env:
+            DOCKER_FILE: Dockerfile.positioning
+            IMAGE_NAME: ${{ github.repository }}-server-positioning
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log into registry ${{ env.REGISTRY }}
+              uses: docker/login-action@v3
+              if: github.event_name != 'pull_request'
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Docker Metadata
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: |
+                      ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+                  tags: |
+                      type=semver,pattern={{version}}
+                      type=semver,pattern={{major}}.{{minor}}
+
+            - name: Build and push Docker image
+              uses: docker/build-push-action@v6
+              with:
+                  file: ${{ env.DOCKER_FILE }}
+                  push: ${{ github.event_name != 'pull_request' }}
+                  platforms: linux/amd64
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  provenance: false
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+
+            - name: Clean container registry
+              uses: actions/delete-package-versions@v5
+              with:
+                  package-name: ${{ env.IMAGE_NAME }}
+                  package-type: "container"
+                  min-versions-to-keep: 10
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+    release-website-backend:
+        name: Release Website Server
+        runs-on: ubuntu-latest
+        env:
+            DOCKER_FILE: Dockerfile.website
+            IMAGE_NAME: ${{ github.repository }}-server-website
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log into registry ${{ env.REGISTRY }}
+              uses: docker/login-action@v3
+              if: github.event_name != 'pull_request'
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Docker Metadata
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: |
+                      ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+                  tags: |
+                      type=semver,pattern={{version}}
+                      type=semver,pattern={{major}}.{{minor}}
+
+            - name: Build and push Docker image
+              uses: docker/build-push-action@v6
+              with:
+                  file: ${{ env.DOCKER_FILE }}
+                  push: ${{ github.event_name != 'pull_request' }}
+                  platforms: linux/amd64
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  provenance: false
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+
+            - name: Clean container registry
+              uses: actions/delete-package-versions@v5
+              with:
+                  package-name: ${{ env.IMAGE_NAME }}
+                  package-type: "container"
+                  min-versions-to-keep: 10
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+    release-db-migration:
+        name: Release DB Migration
+        runs-on: ubuntu-latest
+        env:
+            DOCKER_FILE: Dockerfile.migration
+            IMAGE_NAME: ${{ github.repository }}-server-db-migration
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log into registry ${{ env.REGISTRY }}
+              uses: docker/login-action@v3
+              if: github.event_name != 'pull_request'
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Docker Metadata
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: |
+                      ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+                  tags: |
+                      type=semver,pattern={{version}}
+                      type=semver,pattern={{major}}.{{minor}}
+
+            - name: Build and push Docker image
+              uses: docker/build-push-action@v6
+              with:
+                  file: ${{ env.DOCKER_FILE }}
+                  push: ${{ github.event_name != 'pull_request' }}
+                  platforms: linux/amd64
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  provenance: false
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+
+            - name: Clean container registry
+              uses: actions/delete-package-versions@v5
+              with:
+                  package-name: ${{ env.IMAGE_NAME }}
+                  package-type: "container"
+                  min-versions-to-keep: 10
+                  token: ${{ secrets.GITHUB_TOKEN }}
