@@ -14,6 +14,7 @@ permissions:
 
 jobs:
     release-positioning-backend:
+        name: Release Positioning Server
         uses: ./.github/workflows/do-deploy-docker.yml
         with:
             name: ${{ github.repository }}-server-positioning
@@ -21,6 +22,7 @@ jobs:
             registry: ghcr.io
 
     release-website-backend:
+        name: Release Website Server
         uses: ./.github/workflows/do-deploy-docker.yml
         with:
             name: ${{ github.repository }}-server-website
@@ -28,6 +30,7 @@ jobs:
             registry: ghcr.io
 
     release-db-migration:
+        name: Release DB Migration Service
         uses: ./.github/workflows/do-deploy-docker.yml
         with:
             name: ${{ github.repository }}-server-db-migration
