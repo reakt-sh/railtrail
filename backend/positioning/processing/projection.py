@@ -45,7 +45,7 @@ async def perform_projection(ppos: ParsedPosition, ana: AnalysisData):
         speed=ppos.position.speed,
         longitude=nearest_point_pos_feature["geometry"]["coordinates"][0] if not off_track else ppos.position.longitude,
         latitude=nearest_point_pos_feature["geometry"]["coordinates"][1] if not off_track else ppos.position.latitude,
-        label=str(ppos.vehicle.info["label"]) if ppos.vehicle and "label" in ppos.vehicle.info is not None else "??",
+        label=str(ppos.vehicle.info["label"]) if ppos.vehicle and "label" in ppos.vehicle.info and ppos.vehicle.info["label"] is not None else "??",
         offtrack=off_track,
     )
 
