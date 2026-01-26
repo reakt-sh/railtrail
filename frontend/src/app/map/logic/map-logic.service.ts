@@ -1,6 +1,4 @@
 import { Injectable } from "@angular/core";
-import * as turfHelpers from "@turf/helpers";
-import * as turfMeta from "@turf/meta";
 import { Logger } from "loglevel";
 import { Map } from "maplibre-gl";
 import { MapPosition } from "../../../../schema-gen/map_position";
@@ -61,8 +59,11 @@ export class MapLogicService {
 
     private initLine(line: RailLine, map: Map) {
         for (const track of line.tracks) {
-            const trackData = track.data as unknown as GeoJSON.FeatureCollection<GeoJSON.Point>
-            const lineStringData: GeoJSON.Feature<GeoJSON.LineString> = turfHelpers.lineString(turfMeta.coordAll(trackData))
+            const lineStringData: GeoJSON.Feature<GeoJSON.LineString> = {
+                "type": "Feature",
+                "geometry": track.data as GeoJSON.LineString,
+                "properties": {},
+            }
 
             map.addSource(track.id, {
                 "type": "geojson",

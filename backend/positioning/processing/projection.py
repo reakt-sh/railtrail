@@ -1,7 +1,7 @@
 from schema_gen.map_position import MapPosition
 from processing.custom_types import AnalysisData, ParsedPosition, Projection
 from shapely import Point
-from data.tracks import AUGMENTED_TRACK_DATA, AUGMENTED_TRACK_LINESTRINGS
+from data.tracks import AUGMENTED_TRACK_DATA, TRACK_LINESTRINGS
 from turf import distance, nearest_point, point as TPoint
 from typing import cast, Dict
 from processing.notifier import notify_subscribers
@@ -13,7 +13,7 @@ async def perform_projection(ppos: ParsedPosition, ana: AnalysisData):
 
     track_id = next(iter(AUGMENTED_TRACK_DATA.keys()))
     track_features = next(iter(AUGMENTED_TRACK_DATA.values()))
-    track_linestring = next(iter(AUGMENTED_TRACK_LINESTRINGS.values()))
+    track_linestring = next(iter(TRACK_LINESTRINGS.values()))
 
     # GPS point
     coords = Point(ppos.position.longitude, ppos.position.latitude)
