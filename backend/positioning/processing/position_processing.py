@@ -1,17 +1,19 @@
 from dateutil import parser as timestamp_parser
 from datetime import datetime
+
+import processing.infrastructure as infrastructure
 from processing import logger
 from data.trackers import *
+from data.positions import retrieve_latest_position_per_vehicle
 from schema_gen.position import Position
 from processing.projection import perform_projection
 from processing.custom_types import AnalysisData, ParsedPosition
-from processing.infrastructure import store_data
 from prisma.models import Tracker, Vehicle
 from processing.constants import *
 
 _last_processed: dict[str, ParsedPosition] = {}
 
-async def process(pos: Position) -> bool:
+async def process_new_position(pos: Position) -> bool:
     if pos is None:
         return False
 
@@ -63,8 +65,32 @@ async def process(pos: Position) -> bool:
     # Store raw data
     ppos = ParsedPosition(position=pos, timestamp=timestamp, processed=datetime.now(), vehicle=vehicle, tracker=tracker)
     _last_processed[tracker_data.deviceID] = ppos
-    store_data(ppos)
+    infrastructure.store_data(ppos)
 
+    # Perform analysis
+    analysis = await _create_analysis_for_position(ppos, vehicle)
+
+    # Store analysis
+    infrastructure.store_data(analysis)
+
+    return True
+
+
+async def reprocess_latest_analyses() -> datetime:
+    """Reprocess latest position analyses of all vehicles. Used for example after track data changes."""
+    positions = await retrieve_latest_position_per_vehicle()
+    for vehicle, position in positions:
+        # Perform analysis
+        analysis = await _create_analysis_for_position(position, vehicle)
+        # Store analysis
+        infrastructure.store_data(analysis)
+
+    return datetime.now()
+
+
+### Internal API
+
+async def _create_analysis_for_position(ppos: ParsedPosition, vehicle: Vehicle) -> AnalysisData:
     # Start analysis
     analysis = AnalysisData(start=datetime.now(),end=datetime.now())
     analysis.vehicle = vehicle
@@ -78,10 +104,7 @@ async def process(pos: Position) -> bool:
     # Final timestamp
     analysis.end = datetime.now()
 
-    # Store analysis
-    store_data(analysis)
-
-    return True
+    return analysis
 
 
 def _identify_vehicle(pos: Position, tracker: Tracker, info: TrackerInfo) -> Vehicle | None:

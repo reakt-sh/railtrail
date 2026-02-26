@@ -9,7 +9,7 @@ from auth import get_api_key
 from data.database import synchronize
 from schema_gen.position import Position
 from processing.constants import ENDPOINT_KEY, ENDPOINT_ID_TTN, ENDPOINT_ID_ONBOARD
-from processing.infrastructure import process_position
+from processing.infrastructure import process_position, start_reprocessing_analyses
 from processing.ttn import handle_ttn_message
 from processing.notifier import _initial_data
 
@@ -106,9 +106,14 @@ async def current_data():
 
 ## Route: Administration
 
-
 @router.get("/admin/sync")
 async def synchronize_db(_api_key: str = Security(get_api_key)):
     """Internal endpoint for triggering synchronization with db"""
     await synchronize()
     return {"synchronized": True}
+
+
+@router.get("/admin/recalculate")
+async def recalculate_analysis(_api_key: str = Security(get_api_key)):
+    """Internal endpoint for triggering reevaluation of all current positions"""
+    return {"recalculate": start_reprocessing_analyses()}

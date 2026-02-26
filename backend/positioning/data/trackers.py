@@ -40,6 +40,14 @@ def get_tracker(deviceID: str, deviceType: str | None) -> Tracker | None:
         return None
 
 
+def get_tracker_by_db_id(dbID: int) -> Tracker | None:
+    """Get the Tracker for the given database UID"""
+    for tracker in _tracker_cache.values():
+        if tracker.uid == dbID:
+            return tracker
+    return None
+
+
 def tracker_info(tracker: Tracker) -> TrackerInfo:
     """Get TrackerInfo for tracker entry"""
     if "deviceID" in tracker.info and tracker.info["deviceID"] in _tracker_info_cache:

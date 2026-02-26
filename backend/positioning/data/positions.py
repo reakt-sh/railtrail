@@ -1,15 +1,17 @@
 """Functions for storing position related data """
 
+import traceback
+from typing import List, Tuple
 from prisma import Json
-from prisma.models import RawData
+from prisma.models import RawData, Vehicle
 from prisma.types import RawDataCreateInput
+from pydantic import ValidationError
 
+import data.trackers as trackers
 from schema_gen.position import Position
 from processing.constants import FIND_POSITION_FOR_STATS_AGE_DAYS
 from processing.custom_types import DeviceStats, ParsedPosition
 from data import logger
-from data.trackers import get_tracker
-
 
 async def store_raw_data(ppos: ParsedPosition):
     """Store the ParsedPosition as RawData entry in the database"""
@@ -31,7 +33,7 @@ async def store_stats(stats: DeviceStats):
     """Store the DeviceStats as auxiliary data entry in the latest position entry"""
 
     # Find track in DB
-    tracker = get_tracker(stats.deviceID, None)
+    tracker = trackers.get_tracker(stats.deviceID, None)
 
     if tracker:
         # Search position to attach to
@@ -75,3 +77,34 @@ async def store_stats(stats: DeviceStats):
             )
     else:
         logger.warning("No tracker registered for device ID %s for storing device statistics.", stats.deviceID)
+
+
+async def retrieve_latest_position_per_vehicle() -> List[Tuple[Vehicle, ParsedPosition]]:
+    """Retrieve latest position for each vehicle"""
+    result = []
+
+    for v in trackers.all_vehicles():
+        latest = await RawData.prisma().find_first(
+            where={
+                "vehicleId": v.uid,
+            },
+            order={
+                "timestamp": "desc",
+            },
+        )
+        if latest:
+            try:
+                ppos = ParsedPosition(
+                    position=Position.model_validate(latest.data),
+                    timestamp=latest.timestamp,
+                    processed=latest.processed,
+                    tracker=trackers.get_tracker_by_db_id(latest.trackerId),
+                    vehicle=v,
+                    dbID=latest.uid,
+                )
+                result.append((v,ppos))
+            except ValidationError as ve:
+                logger.error("RawData position record (%d) in database contains invalid data object: %s", latest.uid, ve)
+                traceback.print_exc()
+
+    return result
