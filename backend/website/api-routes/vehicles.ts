@@ -11,7 +11,7 @@ import checkWithSchema from "../validate";
 
 const logger = logging.getLogger("api:vehicles");
 
-apiRouter.get("/vehicles", async (req, res) => {
+apiRouter.get("/vehicle/list-all", async (req, res) => {
     const allVehicles = await db.vehicle.findMany({ include: { tracker: true }, orderBy: { uid: "asc" } });
     const allTrackers = await db.tracker.findMany({ orderBy: { uid: "asc" } });
     const list: VehicleList = {
@@ -34,7 +34,7 @@ apiRouter.get("/vehicles", async (req, res) => {
 });
 
 
-apiRouter.post("/vehicles", authAdminGuard, async (req, res) => {
+apiRouter.post("/vehicle/batch-update", authAdminGuard, async (req, res) => {
     const newList: VehicleList = req.body;
     const validationErrors = checkWithSchema("vehicle_list", newList);
     if (validationErrors) {

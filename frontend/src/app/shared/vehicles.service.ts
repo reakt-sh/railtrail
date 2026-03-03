@@ -35,13 +35,13 @@ export class VehiclesService {
     }
 
     public requestList() : Observable<VehicleList> {
-        return this.http.get<VehicleList>(environment.webAPI + "/vehicles").pipe(tap((list: VehicleList) => {
+        return this.http.get<VehicleList>(environment.webAPI + "/vehicle/list-all").pipe(tap((list: VehicleList) => {
             this.latestList.next(list);
         }));
     }
 
     public saveList(newList: VehicleList) : Observable<VehicleList> {
-        return this.http.post<VehicleList>(environment.webAPI + "/vehicles", newList);
+        return this.http.post<VehicleList>(environment.webAPI + "/vehicle/batch-update", newList);
     }
 
     public createMapUpdateSubscription(): Observable<MapPosition> {
