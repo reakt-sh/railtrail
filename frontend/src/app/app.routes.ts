@@ -5,6 +5,8 @@ import { VehiclesComponent } from "./admin/vehicles/vehicles.component";
 import { OperatorAuthGuard } from "./auth/operator-auth.guard";
 import { LoginComponent } from "./auth/login/login.component";
 import { AdminAuthGuard } from "./auth/admin-auth.guard";
+import { OverviewComponent as FeedbackOverviewComponent } from "./feedback/overview/overview.component";
+import { SubmitComponent as FeedbackSubmitComponent } from "./feedback/submit/submit.component";
 
 export const routes: Routes = [
     // auth
@@ -31,6 +33,22 @@ export const routes: Routes = [
     {
         path: "map",
         component: MapComponent,
+    },
+    // Feedback
+    {
+        path: "feedback",
+        redirectTo: "/feedback/all",
+        pathMatch: "full"
+    },
+    {
+        path: "feedback/all",
+        component: FeedbackOverviewComponent,
+        canActivate: [OperatorAuthGuard]
+    },
+    {
+        path: "feedback/submit",
+        component: FeedbackSubmitComponent,
+        canActivate: [OperatorAuthGuard]
     },
     // Catch all
     {

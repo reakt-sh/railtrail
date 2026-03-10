@@ -1,0 +1,40 @@
+<div class="container">
+    <h1 i18n>Feedback Overview</h1>
+
+    <div class="above-table">
+        <mat-form-field appearance="outline">
+            <mat-label i18n>Year</mat-label>
+            <mat-select [(value)]="selectedYear" (selectionChange)="requestList(selectedYear)">
+                @for (year of availableYears; track year) {
+                <mat-option [value]="year">{{year}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div class="table-container mat-elevation-z8">
+        <table mat-table matSort [dataSource]="tableSource">
+            <ng-container matColumnDef="timestamp">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Date</th>
+                <td mat-cell *matCellDef="let element">{{convertDate(element.timestamp)}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="rating">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Rating</th>
+                <td mat-cell *matCellDef="let element">{{element.rating}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="text">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Comment Preview</th>
+                <td mat-cell *matCellDef="let element">{{cropComment(element.text)}}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        @if (!loaded) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+    </div>
+
+</div>

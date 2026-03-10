@@ -1,0 +1,24 @@
+<div role="main" class="container">
+    <h1 i18n>Submit Feedback</h1>
+    <h3 i18n>Just for Testing!</h3>
+
+    <form class="feedback-form" (onsubmit)="sendFeedback()">
+        <mat-form-field (onsubmit)="sendFeedback()">
+            <mat-label i18n>Rating</mat-label>
+            <input matInput [formControl]="ratingForm" type="number" min="1" max="5">
+        </mat-form-field>
+        <!-- <button mat-icon-button [color]="color" *ngFor="let ratingId of ratingArr;index as i" [id]="'star_'+i" (click)="onClick(i+1)">
+            <mat-icon>
+                {{showIcon(i)}}
+            </mat-icon>
+        </button> -->
+
+        <mat-form-field (onsubmit)="sendFeedback()">
+            <mat-label i18n>Leave a comment</mat-label>
+            <textarea matInput #comment [formControl]="commentForm" maxlength="7000"></textarea>
+            <mat-hint align="end">{{comment.value.length}} / 7000</mat-hint>
+        </mat-form-field>
+
+        <button i18n mat-stroked-button class="submit-btn" (click)="sendFeedback()">Submit</button>
+    </form>
+</div>

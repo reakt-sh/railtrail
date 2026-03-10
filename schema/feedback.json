@@ -1,0 +1,32 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://reakt.sh/schema/feedback.json",
+    "title": "Feedback",
+    "description": "User feedback entry.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "rating"
+    ],
+    "properties": {
+        "rating": {
+            "type": "integer",
+            "description": "The rating given in this feedback.",
+            "minimum": 0,
+            "maximum": 5
+        },
+        "text": {
+            "type": "string",
+            "description": "[Optional] Additional text comment.",
+            "maxLength": 7000
+        },
+        "vehicle": {
+            "type": "integer",
+            "description": "[Optional] The vehicle ID associated with this feedback. Must match a valid vehicle ID registered on the server."
+        },
+        "timestamp": {
+            "type": "string",
+            "description": "[Optional] Timestamp in ISO 8601 format when this feedback was created."
+        }
+    }
+}
