@@ -227,13 +227,17 @@ def db_migrate():
     except ModuleNotFoundError:
         print("Error: Python module dotenv not found, please run this script in the virtual environment setup by this script.")
 
+    # Get name
+    label = input("Enter label for this migration (keep empty to skip): ").strip()
+    apply = input("Apply migration in development db? (y/n): ").strip().lower() == "y"
+
     # Generate
     print("## Generating migration file")
     run_cmd(
         [
             "prisma" if args.no_venv else join(BKE_POS_VENV_DIR, "bin", "prisma"),
             "migrate", "dev"
-        ],
+        ] + (["--name", label] if label else []) + (["--create-only"] if not apply else []),
         cwd=gen_dir,
         env=environ if args.no_venv else dict(environ, VIRTUAL_ENV=BKE_POS_VENV_DIR, PATH=join(BKE_POS_VENV_DIR, "bin") + ":" + environ["PATH"]),
     )
