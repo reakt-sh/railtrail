@@ -23,7 +23,7 @@ jobs:
 
             - name: Run developer setup
               working-directory: ./dev
-              run: python dev.py init
+              run: python dev.py init --ci
 
             - name: Build website frontend
               working-directory: ./frontend
@@ -43,7 +43,7 @@ jobs:
             - name: Apply database schema
               run: |
                   . .venv/bin/activate
-                  python dev/dev.py migrate
+                  python dev/dev.py migrate --ci
 
             - name: Start positioning server
               working-directory: ./backend/positioning

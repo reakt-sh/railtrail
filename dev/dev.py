@@ -228,8 +228,12 @@ def db_migrate():
         print("Error: Python module dotenv not found, please run this script in the virtual environment setup by this script.")
 
     # Get name
-    label = input("Enter label for this migration (keep empty to skip): ").strip()
-    apply = input("Apply migration in development db? (y/n): ").strip().lower() == "y"
+    if args.ci:
+        label = None
+        apply = True
+    else:
+        label = input("Enter label for this migration (keep empty to skip): ").strip()
+        apply = input("Apply migration in development db? (y/n): ").strip().lower() == "y"
 
     # Generate
     print("## Generating migration file")
@@ -302,6 +306,7 @@ if __name__ == "__main__":
     arg_parser.add_argument("--no-website", action="store_true", help="deactivate website backend generation")
     arg_parser.add_argument("--no-frontend", action="store_true", help="deactivate frontend generation")
     arg_parser.add_argument("--no-venv", action="store_true", help="deactivate using Python virtual environment")
+    arg_parser.add_argument("--ci", action="store_true", help="activate CI mode to disable interactive prompts and use defaults")
     arg_parser.add_argument("actions", nargs="+", choices=ACTIONS.keys(), help="the action(s) to perform")
 
     # Parse
