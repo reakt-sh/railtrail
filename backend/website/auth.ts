@@ -18,7 +18,7 @@ interface User {
 // Simple middleware to ensure user is authenticated.
 
 /**
- * Only lets users logged in as admins pass.
+ * Only lets users logged in as operators or higher pass.
  */
 export function authOperatorGuard(req: Request, res: Response, next: NextFunction) {
     if (req.isAuthenticated() && ((req.user as User).role === AuthRole.Operator || (req.user as User).role === AuthRole.Admin)) {

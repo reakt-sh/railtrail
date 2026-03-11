@@ -11,7 +11,7 @@ export class OperatorAuthGuard implements CanActivate, CanActivateChild {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        return this.authService.checkLogin(state.url, AuthRole.Operator);
+        return this.authService.gainAccessLevel(state.url, AuthRole.Operator);
     }
 
     canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {

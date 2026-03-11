@@ -11,7 +11,7 @@ export class AdminAuthGuard implements CanActivate, CanActivateChild {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        return this.authService.checkLogin(state.url, AuthRole.Admin);
+        return this.authService.gainAccessLevel(state.url, AuthRole.Admin);
     }
 
     canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {

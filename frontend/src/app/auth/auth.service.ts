@@ -36,7 +36,7 @@ export class AuthService {
                     this.logger.debug("Redirecting to root.");
                     this.router.navigateByUrl("/");
                 }
-            } else if ((!loggedInAs || (this.requestedRole && this.requestedRole != loggedInAs.role)) && this.redirectPage && this.redirectPage !== this.loginPage) {
+            } else if ((!loggedInAs || (this.requestedRole && this.accessLevelOf(this.requestedRole) > this.accessLevelOf(loggedInAs.role))) && this.redirectPage && this.redirectPage !== this.loginPage) {
                 this.router.navigateByUrl(this.loginPage);
                 this.logger.debug("Redirecting to login page.");
             }
@@ -61,18 +61,17 @@ export class AuthService {
         return !!this.loggedInAs.value && this.loggedInAs.value.role === AuthRole.Admin;
     }
 
-    public checkLogin(url: string, role?: AuthRole): Observable<boolean> | boolean {
-        let authed = this.isLoggedIn();
-        if (authed && role) {
-            authed = this.loggedInAs.value?.role === role;
-        }
+    public hasAccessLevel(level: AuthRole): boolean {
+        return !!this.loggedInAs.value && this.accessLevelOf(this.loggedInAs.value?.role) >= this.accessLevelOf(level);
+    }
 
-        if (authed) {
+    public gainAccessLevel(url: string, level: AuthRole): Observable<boolean> | boolean {
+        if (this.isLoggedIn() && this.accessLevelOf(this.loggedInAs.value?.role) >= this.accessLevelOf(level)) {
             return true;
         } else {
             this.redirectPage = url;
-            this.requestedRole = role;
-            return this.testAuthStatus(role);
+            this.requestedRole = level;
+            return this.testAuthStatus(level);
         }
     }
 
@@ -99,13 +98,13 @@ export class AuthService {
         this.http.get(environment.webAPI + "auth/logout").subscribe(_ => this.testAuthStatus());
     }
 
-    private testAuthStatus(role?: AuthRole): Observable<boolean> {
+    private testAuthStatus(level?: AuthRole): Observable<boolean> {
         this.logger.debug("Testing authentication");
         return this.http.get<LoggedInAs>(environment.webAPI + "/auth").pipe(
             tap((loggedInAs) => this.loggedInAs.next(loggedInAs)),
             map((loggedInAs) => { // Successfully logged in
                 this.logger.debug("Is logged in as ", loggedInAs);
-                if (loggedInAs && (role === undefined || role === loggedInAs.role)) {
+                if (loggedInAs && (level === undefined || this.accessLevelOf(loggedInAs.role) >= this.accessLevelOf(level))) {
                     return true;
                 }
                 return false;
@@ -116,6 +115,14 @@ export class AuthService {
                 return of(false);
             })
         );
+    }
+
+    private accessLevelOf(role?: AuthRole): number {
+        switch (role) {
+        case AuthRole.Operator: return 10;
+        case AuthRole.Admin: return 99;
+        default: return 0;
+        }
     }
 }
 

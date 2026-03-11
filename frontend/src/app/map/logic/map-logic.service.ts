@@ -2,7 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { Map } from "maplibre-gl";
 import { MapPosition } from "../../../../schema-gen/map_position";
 import { RailLine } from "../../../../schema-gen/railline";
-import { AuthService } from "../../auth/auth.service";
+import { AuthRole, AuthService } from "../../auth/auth.service";
 import { LoggingService } from "../../shared/logging.service";
 import { VehiclesService } from "../../shared/vehicles.service";
 import { RailLineService } from "./rail-line.service";
@@ -117,8 +117,8 @@ export class MapLogicService {
                 "type": "FeatureCollection",
                 "features": Object.entries(this.vehiclePositions).filter(
                     ([_, pos]) =>
-                        (pos.vehicle > 0 || this.authService.isLoggedInAsAdmin()) &&
-                        (!pos.offtrack || this.authService.isLoggedInAsOperator())
+                        (pos.vehicle > 0 || this.authService.hasAccessLevel(AuthRole.Admin)) &&
+                        (!pos.offtrack || this.authService.hasAccessLevel(AuthRole.Operator))
                 ).map(([_, pos]) => {
                     return {
                         "type": "Feature",
