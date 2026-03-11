@@ -1,9 +1,9 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable, isDevMode } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Router } from "@angular/router";
+import { Logger } from "loglevel";
 import { BehaviorSubject, catchError, map, Observable, of, skip, tap } from "rxjs";
 import { environment } from "../../environments/environment";
-import { Logger } from "loglevel";
 import { LoggingService } from "../shared/logging.service";
 
 @Injectable({
@@ -11,7 +11,10 @@ import { LoggingService } from "../shared/logging.service";
 })
 export class AuthService {
 
-    private readonly logger: Logger;
+    private readonly logger: Logger = inject(LoggingService).getLogger("auth:service");
+    private readonly router: Router = inject(Router);
+    private readonly http: HttpClient = inject(HttpClient);
+
     private redirectPage?: string;
     public requestedRole?: AuthRole;
     public readonly loginPage = "/login";
@@ -20,13 +23,7 @@ export class AuthService {
     private readonly loggedInAs = new BehaviorSubject<LoggedInAs | undefined>(undefined);
     public readonly loggedIn$ = this.loggedInAs.pipe(map(it => !!it));
 
-    constructor(
-        private router: Router,
-        private http: HttpClient,
-        logging: LoggingService,
-    ) {
-        this.logger = logging.getLogger("auth:service");
-
+    constructor() {
         // Init redirector
         this.loggedInAs.pipe(skip(1)).subscribe((loggedInAs) => {
             this.logger.debug("New log in state ", loggedInAs);
@@ -90,7 +87,7 @@ export class AuthService {
                 this.loggedInAs.next(loggedInAs);
             }),
             map((loggedInAs) => !!loggedInAs),
-            catchError((err, caught) => {
+            catchError((err, _) => {
                 this.logger.debug("Error while logging in.", err);
                 return of(false);
             })
@@ -113,7 +110,7 @@ export class AuthService {
                 }
                 return false;
             }),
-            catchError((err) => { // Not logged in
+            catchError((_) => { // Not logged in
                 this.logger.debug("Not yet authenticated");
                 this.loggedInAs.next(undefined);
                 return of(false);

@@ -1,6 +1,5 @@
-import { HttpClient } from "@angular/common/http";
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { NgxMapLibreGLModule, MapComponent as LibreMapComponent } from "@maplibre/ngx-maplibre-gl";
+import { Component, inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { MapComponent as LibreMapComponent, NgxMapLibreGLModule } from "@maplibre/ngx-maplibre-gl";
 import { Logger } from "loglevel";
 import { Map, StyleSpecification } from "maplibre-gl";
 import { RailLine } from "../../../schema-gen/railline";
@@ -17,13 +16,16 @@ import { RailLineService } from "./logic/rail-line.service";
 })
 export class MapComponent implements OnInit, OnDestroy {
 
+    private readonly logger: Logger = inject(LoggingService).getLogger("map:component");
+    private readonly railLineService: RailLineService = inject(RailLineService);
+    private readonly mapIconsService: MapIconsService = inject(MapIconsService);
+    private readonly mapLogicService: MapLogicService = inject(MapLogicService);
+
     @ViewChild("map", { static: true })
     private mapComp!: LibreMapComponent;
 
     // The underlying map instance
     private map?: Map;
-
-    private readonly logger: Logger;
 
     readonly mapStyle: StyleSpecification = {
         "version": 8,
@@ -46,30 +48,20 @@ export class MapComponent implements OnInit, OnDestroy {
         ]
     };
 
-    constructor(
-        private readonly railLine: RailLineService,
-        private readonly mapLogic: MapLogicService,
-        private readonly mapIcons: MapIconsService,
-        private readonly httpClient: HttpClient,
-        logging: LoggingService,
-    ) {
-        this.logger = logging.getLogger("map:component");
-    }
-
     ngOnInit() {
         this.mapComp.mapLoad.subscribe((m: Map) => this.initMap(m));
     }
 
     ngOnDestroy(): void {
-        this.mapLogic.stop();
+        this.mapLogicService.stop();
     }
 
     private initMap(map: Map) {
         this.map = map
 
-        this.mapIcons.init(map);
+        this.mapIconsService.init(map);
 
-        this.railLine.getRailLine().subscribe({
+        this.railLineService.getRailLine().subscribe({
             next: (line: RailLine) => {
                 // Configure
                 const conf = line.map.startConfiguration;
@@ -82,7 +74,7 @@ export class MapComponent implements OnInit, OnDestroy {
                 map.touchZoomRotate.disableRotation();
 
                 // Start to populate map
-                this.mapLogic.start(map);
+                this.mapLogicService.start(map);
             }
         });
     }

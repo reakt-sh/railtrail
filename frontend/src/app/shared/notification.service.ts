@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable({
@@ -6,9 +6,8 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 })
 export class NotificationService {
 
+    private readonly snackBar = inject(MatSnackBar);
     private readonly closeLabel = $localize`Close`
-
-    constructor(public snackBar: MatSnackBar) { }
 
     public showError(message: string) {
         this.snackBar.open(message, this.closeLabel, {

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, RouterStateSnapshot } from "@angular/router";
 import { AuthRole, AuthService } from "./auth.service";
 
@@ -7,21 +7,14 @@ import { AuthRole, AuthService } from "./auth.service";
 })
 export class OperatorAuthGuard implements CanActivate, CanActivateChild {
 
-    constructor(
-        private auth: AuthService
-    ) {
+    private readonly authService: AuthService = inject(AuthService);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+        return this.authService.checkLogin(state.url, AuthRole.Operator);
     }
 
-    canActivate(
-        route: ActivatedRouteSnapshot,
-        state: RouterStateSnapshot
-    ) {
-        return this.auth.checkLogin(state.url, AuthRole.Operator);
-    }
-
-    canActivateChild(
-        route: ActivatedRouteSnapshot,
-        state: RouterStateSnapshot) {
+    canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         return this.canActivate(route, state);
     }
 }

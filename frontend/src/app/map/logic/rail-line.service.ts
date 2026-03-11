@@ -1,24 +1,21 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, filter } from "rxjs";
 import { RailLine } from "../../../../schema-gen/railline";
 import { environment } from "../../../environments/environment";
 import { LoggingService } from "../../shared/logging.service";
-import { Logger } from "loglevel";
 
 @Injectable({
     providedIn: "root"
 })
 export class RailLineService {
 
-    private readonly logger: Logger;
+    private readonly logger = inject(LoggingService).getLogger("railline:service");
+    private readonly httpClient = inject(HttpClient);
+
     private readonly railLineSubject = new BehaviorSubject<RailLine | undefined>(undefined);
 
-    constructor(
-        private httpClient: HttpClient,
-        logging: LoggingService,
-    ) {
-        this.logger = logging.getLogger("railline:service");
+    constructor() {
         this.httpClient.get<RailLine>(`${environment.assetsURLPrefix}/assets/raillines/${environment.railLine}.json`).subscribe({
             next: (railline: RailLine) => {
                 // Maybe validate?

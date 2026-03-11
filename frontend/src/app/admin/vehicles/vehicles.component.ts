@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, inject, OnInit, ViewChild } from "@angular/core";
 import { Logger } from "loglevel";
 import { VehicleList } from "../../../../schema-gen/vehicle_list";
 import { LoggingService } from "../../shared/logging.service";
@@ -17,9 +17,12 @@ import { VehiclesService } from "../../shared/vehicles.service";
     templateUrl: "./vehicles.component.html",
     styleUrl: "./vehicles.component.scss"
 })
-export class VehiclesComponent implements OnInit {
+export class VehiclesComponent implements OnInit, AfterViewInit {
 
-    private readonly logger: Logger;
+    private readonly logger: Logger = inject(LoggingService).getLogger("admin::vehicles:component");
+    private readonly notificationService: NotificationService = inject(NotificationService);
+    private readonly vehiclesService: VehiclesService = inject(VehiclesService);
+    protected readonly authService: AuthService = inject(AuthService);
 
     @ViewChild(MatSort) sort?: MatSort;
 
@@ -34,18 +37,12 @@ export class VehiclesComponent implements OnInit {
     protected tableSource = new MatTableDataSource<TableRow>([]);
     protected vehicleList?: VehicleList;
 
-    constructor(
-        readonly notifier: NotificationService,
-        readonly auth: AuthService,
-        readonly vehicles: VehiclesService,
-        readonly logging: LoggingService,
-    ) {
-        this.logger = logging.getLogger("admin::vehicles:component");
+    ngOnInit(): void {
+        this.requestList();
     }
 
-    ngOnInit(): void {
+    ngAfterViewInit(): void {
         this.tableSource.sort = this.sort ?? null;
-        this.requestList();
     }
 
     enterEditMode() {
@@ -105,23 +102,23 @@ export class VehiclesComponent implements OnInit {
             trackers: [],
         };
         this.logger.debug("New vehicle list", newList);
-        this.vehicles.saveList(newList).subscribe({
+        this.vehiclesService.saveList(newList).subscribe({
             next: (_: VehicleList) => {
                 this.loaded = false;
                 this.edit = false;
                 this.displayedColumns = this.viewModeColumns;
-                this.notifier.showInfo($localize`New vehicle list saved!`);
+                this.notificationService.showInfo($localize`New vehicle list saved!`);
                 this.requestList();
             },
             error: (err) => {
                 this.logger.error(err);
-                this.notifier.showError($localize`Could not save vehicle list!`);
+                this.notificationService.showError($localize`Could not save vehicle list!`);
             }
         });
     }
 
     private requestList() {
-        this.vehicles.requestList().subscribe({
+        this.vehiclesService.requestList().subscribe({
             next: (list: VehicleList) => {
                 this.loaded = true;
                 this.vehicleList = list;
@@ -130,7 +127,7 @@ export class VehiclesComponent implements OnInit {
             },
             error: (err) => {
                 this.logger.error(err);
-                this.notifier.showError($localize`Could not load vehicle list!`);
+                this.notificationService.showError($localize`Could not load vehicle list!`);
             }
         });
     }

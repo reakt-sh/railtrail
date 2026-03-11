@@ -95,7 +95,7 @@
     </div>
 
     <div class="below-table">
-        @if (!edit && auth.isLoggedInAsAdmin()) {
+        @if (!edit && authService.isLoggedInAsAdmin()) {
         <button i18n mat-stroked-button (click)="enterEditMode()">Edit
             Vehicles and Tracker Assignment</button>
         }

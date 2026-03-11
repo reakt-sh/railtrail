@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from "@angular/core";
 import { FormControl, ReactiveFormsModule, Validators } from "@angular/forms";
 import { Router, RouterModule } from "@angular/router";
 import { MyMaterialModule } from "../../shared/my-material.module";
@@ -13,28 +13,24 @@ import { AuthRole, AuthService } from "../auth.service";
 })
 export class LoginComponent implements OnInit {
 
+    protected readonly authService: AuthService = inject(AuthService);
+    private readonly router: Router = inject(Router);
+
     protected logout = false;
     protected roles = AuthRole;
     protected hide = signal(true);
-    protected selectedRole: AuthRole;
+    protected selectedRole: AuthRole = AuthRole.Operator;
     protected readonly passwordForm = new FormControl<string>("", [Validators.required]);
     protected passwordErrorMessage = signal("");
     protected failed = signal(false);
 
-    constructor(
-        protected readonly auth: AuthService,
-        private readonly router: Router
-    ) {
-        this.selectedRole = AuthRole.Operator
-    }
-
     ngOnInit(): void {
-        if (this.router.url.endsWith(this.auth.logoutPage)) {
+        if (this.router.url.endsWith(this.authService.logoutPage)) {
             this.logout = true;
-            this.auth.logout();
+            this.authService.logout();
         }
-        if (this.auth.requestedRole) {
-            this.selectedRole = this.auth.requestedRole;
+        if (this.authService.requestedRole) {
+            this.selectedRole = this.authService.requestedRole;
         }
     }
 
@@ -55,7 +51,7 @@ export class LoginComponent implements OnInit {
         this.updateErrorMessage();
         this.failed.set(false);
         if (!this.passwordForm.hasError("required")) {
-            this.auth.loginAsRole(this.selectedRole, this.passwordForm.value || "").subscribe((success) => {
+            this.authService.loginAsRole(this.selectedRole, this.passwordForm.value || "").subscribe((success) => {
                 if (!success) {
                     this.failed.set(true);
                 }

@@ -1,8 +1,6 @@
-import { AfterViewChecked, Component, DoCheck, ElementRef, HostListener, OnInit, ViewChild } from "@angular/core";
+import { AfterViewChecked, Component, DoCheck, ElementRef, HostListener, inject, OnInit, ViewChild } from "@angular/core";
+import { MatSidenav } from "@angular/material/sidenav";
 import { RouterOutlet } from "@angular/router";
-import { MatToolbar } from "@angular/material/toolbar";
-import { MatSidenav, MatSidenavContainer } from "@angular/material/sidenav";
-import { OverlayContainer } from "@angular/cdk/overlay";
 import { LayoutService } from "./shared/layout.service";
 import { MyMaterialModule } from "./shared/my-material.module";
 
@@ -17,40 +15,37 @@ import { MyMaterialModule } from "./shared/my-material.module";
 })
 export class AppComponent implements OnInit, DoCheck, AfterViewChecked {
 
-    @ViewChild("toolbar", { read: ElementRef })
-    toolbarRef!: ElementRef;
+    protected readonly layoutService = inject(LayoutService);
+
+    @ViewChild("toolbar", { read: ElementRef }) toolbarRef!: ElementRef;
     // @ViewChild('sidenavcontainer', { static: true })
     // sidenavContainer!: MatSidenavContainer;
-    @ViewChild("sidenav")
-    sidenav!: MatSidenav;
-
-    constructor(
-        readonly layout: LayoutService,
-        // private readonly overlayContainer: OverlayContainer
-    ) { }
+    @ViewChild("sidenav") sidenav!: MatSidenav;
 
     ngOnInit() {
         this.ngAfterViewChecked(); // Iniital element sizes
-        this.layout.updateWindowSize(window.innerHeight, window.innerWidth, true);
+        this.layoutService.updateWindowSize(window.innerHeight, window.innerWidth, true);
     }
 
     ngDoCheck() {
-        this.layout.updateLayout();
+        this.layoutService.updateLayout();
     }
 
+    // eslint-disable-next-line @angular-eslint/no-empty-lifecycle-method
     ngAfterViewChecked() {
+        // TODO
     }
 
-    @HostListener("window:resize", ["$event.target"])
+    @HostListener("window:resize", ["$event.target"]) // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onResize(target: EventTarget | null) {
-        this.layout.updateWindowSize(window.innerHeight, window.innerWidth, true);
+        this.layoutService.updateWindowSize(window.innerHeight, window.innerWidth, true);
 
-        if (this.layout.sideBySide) {
+        if (this.layoutService.sideBySide) {
             this.sidenav.toggle(false);
         }
     }
 
     get sidebarMode() {
-        return this.layout.sideBySide ? "side" : "over";
+        return this.layoutService.sideBySide ? "side" : "over";
     }
 }

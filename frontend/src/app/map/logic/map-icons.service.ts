@@ -1,24 +1,19 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Logger } from "loglevel";
+import { inject, Injectable } from "@angular/core";
 import { Map } from "maplibre-gl";
-import { LoggingService } from "../../shared/logging.service";
 import { environment } from "../../../environments/environment";
+import { LoggingService } from "../../shared/logging.service";
 
 @Injectable({
     providedIn: "root"
 })
 export class MapIconsService {
 
-    private readonly logger: Logger;
+    private readonly logger = inject(LoggingService).getLogger("map-icon:service");
     private readonly prefix: string;
     private readonly icons: Record<string, HTMLImageElement | ImageBitmap> = {};
     private cached = false;
 
-    constructor(
-        logging: LoggingService,
-    ) {
-        this.logger = logging.getLogger("map-icon:service");
+    constructor() {
         this.prefix = `${environment.assetsURLPrefix}/assets/map/`;
     }
 

@@ -86,6 +86,7 @@ export class LayoutService implements OnDestroy {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     updateToolbarSize(height: number, width: number, updateNow = false) {
         if (this.toolbarHeight !== height) {
             this.toolbarHeight = height;
@@ -97,6 +98,7 @@ export class LayoutService implements OnDestroy {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     updateTopmenuSize(height: number, width: number, updateNow = false) {
         if (this.topMenuWidth !== width) {
             this.topMenuWidth = width;
@@ -108,6 +110,7 @@ export class LayoutService implements OnDestroy {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     updateFooterSize(height: number, width: number, updateNow = false) {
         if (this.footerHeight !== height) {
             this.footerHeight = height;
@@ -119,6 +122,7 @@ export class LayoutService implements OnDestroy {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     disableContentBackground(disable: boolean, updateNow = false) {
         if (updateNow) {
             this.calculateLayout();

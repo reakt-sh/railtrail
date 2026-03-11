@@ -1,34 +1,30 @@
-import { Injectable } from "@angular/core";
-import { Logger } from "loglevel";
+import { inject, Injectable } from "@angular/core";
 import { Map } from "maplibre-gl";
 import { MapPosition } from "../../../../schema-gen/map_position";
 import { RailLine } from "../../../../schema-gen/railline";
+import { AuthService } from "../../auth/auth.service";
 import { LoggingService } from "../../shared/logging.service";
 import { VehiclesService } from "../../shared/vehicles.service";
 import { RailLineService } from "./rail-line.service";
-import { AuthService } from "../../auth/auth.service";
 
 @Injectable({
     providedIn: "root"
 })
 export class MapLogicService {
-    private readonly logger: Logger;
+    private readonly logger = inject(LoggingService).getLogger("map:logic");
+    private readonly raillineService: RailLineService = inject(RailLineService);
+    private readonly authService: AuthService = inject(AuthService);
+    private readonly vehiclesService: VehiclesService = inject(VehiclesService);
+
     private readonly vehiclePositions: Record<number, MapPosition> = {};
 
     private map?: Map | null;
 
-    constructor(
-        private readonly railline: RailLineService,
-        private readonly auth: AuthService,
-        vehiclesUpdates: VehiclesService,
-        logging: LoggingService,
-    ) {
-        this.logger = logging.getLogger("map:logic");
-
-        railline.getRailLine().subscribe({
+    constructor() {
+        this.raillineService.getRailLine().subscribe({
             next: () => {
                 // Subscribe to vehicle positions
-                vehiclesUpdates.createMapUpdateSubscription().subscribe({
+                this.vehiclesService.createMapUpdateSubscription().subscribe({
                     next: (pos: MapPosition) => {
                         this.updateVehiclePosition(pos);
                     }
@@ -46,8 +42,8 @@ export class MapLogicService {
         this.map = map;
 
         // Check if rail line is loaded
-        if (this.railline.railLine) {
-            this.initLine(this.railline.railLine, map);
+        if (this.raillineService.railLine) {
+            this.initLine(this.raillineService.railLine, map);
             this.initVehicles(map);
             this.refreshVehiclePositions();
         }
@@ -121,8 +117,8 @@ export class MapLogicService {
                 "type": "FeatureCollection",
                 "features": Object.entries(this.vehiclePositions).filter(
                     ([_, pos]) =>
-                        (pos.vehicle > 0 || this.auth.isLoggedInAsAdmin()) &&
-                        (!pos.offtrack || this.auth.isLoggedInAsOperator())
+                        (pos.vehicle > 0 || this.authService.isLoggedInAsAdmin()) &&
+                        (!pos.offtrack || this.authService.isLoggedInAsOperator())
                 ).map(([_, pos]) => {
                     return {
                         "type": "Feature",
@@ -138,6 +134,8 @@ export class MapLogicService {
                 })
             };
             this.logger.debug("New vehicle layer", data);
+            // Incomplete typing
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (this.map.getSource("vehicles") as any).setData(data);
         }
     }

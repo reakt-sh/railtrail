@@ -1,9 +1,9 @@
 <mat-sidenav-container #sidenavcontainer role="main" class="sidenav-container"
-    [ngStyle]="{'margin-top.px': layout.headerHeight, 'height.px': layout.contentHeight}">
-    <mat-sidenav #sidenav [class.collapsed]="!layout.sideBySide" class="sidenav" [mode]="sidebarMode">
+    [ngStyle]="{'margin-top.px': layoutService.headerHeight, 'height.px': layoutService.contentHeight}">
+    <mat-sidenav #sidenav [class.collapsed]="!layoutService.sideBySide" class="sidenav" [mode]="sidebarMode">
     </mat-sidenav>
 
-    <section class="sidenav-content" role="content" [ngStyle]="{'min-height.px': layout.contentHeight}">
+    <section class="sidenav-content" role="content" [ngStyle]="{'min-height.px': layoutService.contentHeight}">
         <router-outlet></router-outlet>
     </section>
 

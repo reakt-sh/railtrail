@@ -1,36 +1,32 @@
-import { Inject, Injectable } from "@angular/core";
-import { Logger } from "loglevel";
+import { HttpClient } from "@angular/common/http";
+import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, catchError, EMPTY, map, Observable, tap } from "rxjs";
 import { webSocket } from "rxjs/webSocket";
 import { MapPosition } from "../../../schema-gen/map_position";
+import { VehicleList } from "../../../schema-gen/vehicle_list";
 import { environment } from "../../environments/environment";
 import { LoggingService } from "../shared/logging.service";
 import { WINDOW } from "../shared/window.provider";
-import { HttpClient } from "@angular/common/http";
-import { VehicleList } from "../../../schema-gen/vehicle_list";
 
 @Injectable({
     providedIn: "root"
 })
 export class VehiclesService {
 
-    private readonly logger: Logger;
+    private readonly logger = inject(LoggingService).getLogger("vehicles:service");
+    private readonly http = inject(HttpClient);
+    private readonly window = inject(WINDOW);
+
     private readonly mapUpdateUrl: string;
 
     private readonly latestList = new BehaviorSubject<VehicleList | undefined>(undefined);
     public readonly latestList$ = this.latestList.asObservable();
 
-    constructor(
-        @Inject(WINDOW) private window: Window,
-        private readonly http: HttpClient,
-        readonly logging: LoggingService,
-    ) {
-        this.logger = logging.getLogger("vehicles:service");
-
+    constructor() {
         if (environment.positionAPI && environment.positionAPI.startsWith("http")) {
             this.mapUpdateUrl = `ws${environment.positionAPI.slice(4)}/position-updates`;
         } else {
-            this.mapUpdateUrl = `${window.location.protocol.replace("http", "ws")}//${window.location.host}${environment.positionAPI}/position-updates`;
+            this.mapUpdateUrl = `${this.window.location.protocol.replace("http", "ws")}//${this.window.location.host}${environment.positionAPI}/position-updates`;
         }
     }
 
