@@ -97,6 +97,7 @@ app.get("/api/auth/logout", (req, res) => {
 
 // Route for login
 app.post("/api/auth/login-role", (req, res, next) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     passport.authenticate(testingAuthenticationID, (err: unknown, user: unknown, info: unknown, status: unknown) => {
         if (user) {
             req.logIn(user, (err) => {
@@ -117,6 +118,7 @@ app.post("/api/auth/login-role", (req, res, next) => {
 loadAPI();
 app.use("/api", apiRouter);
 // Fail for other api routes
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.all("/api/*route", authOperatorGuard, (req, res, next) => {
     res.status(404).end();
 });
@@ -127,6 +129,7 @@ app.use(express.static(path.join(__dirname, frontendPath), config.staticRoute));
 
 // Catch all other routes and return the index file (Angular routing!)
 // PUBLIC -> no authGuard
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.get("*route", (req, res) => {
     res.sendFile(path.join(__dirname, frontendPath + "/index.html"));
 });

@@ -11,6 +11,7 @@ import checkWithSchema from "../validate";
 
 const logger = logging.getLogger("api:vehicles");
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 apiRouter.get("/vehicle/list-all", async (req, res) => {
     const allVehicles = await db.vehicle.findMany({ include: { tracker: true }, orderBy: { uid: "asc" } });
     const allTrackers = await db.tracker.findMany({ orderBy: { uid: "asc" } });
