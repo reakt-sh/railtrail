@@ -3,6 +3,8 @@
 A full-stack application to track vehicles on rail lines.
 Currently applied on the [Malente-Lütjenbug railway track](https://www.schiene-m-l.de/) as part of the [REAKT DATA reseach project](https://reakt.sh/).
 
+<img width="600" alt="railtrail" src="https://github.com/user-attachments/assets/f0abc915-698f-47d3-8c98-0b1b1b75c6ed" />
+
 There is also a [mobile app](https://github.com/reakt-sh/railtrail-app) as a travel companion for railbikes rented on the Malente-Lütjenburg railway track. It uses this application as a backend for position tracking.
 
 ## Repository Structure
