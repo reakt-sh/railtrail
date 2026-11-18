@@ -36,7 +36,7 @@
         "@types/errorhandler": "^1.5.3",
         "@types/express": "^5.0.6",
         "@types/express-session": "^1.18.2",
-        "@types/node": "^24.10.4",
+        "@types/node": "^26.6.6",
         "@types/passport": "^1.0.17",
         "@types/passport-local": "^1.0.38",
         "eslint": "^10.15.0",
