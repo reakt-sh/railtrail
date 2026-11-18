@@ -63,6 +63,10 @@ def init():
         print("# Init frontend")
         print("## Installing NPM dependencies")
         run_cmd(["npm", "install"], cwd=FTE_DIR)
+        print("## Creating symlinks")
+        raillines_mirror = join(FTE_DIR, "raillines-mirror")
+        if not exists(raillines_mirror):
+            symlink(join(FTE_DIR, "..", "raillines"), raillines_mirror, target_is_directory=True)
 
     print("# Initial update of DB schemas")
     update_db_schemas()

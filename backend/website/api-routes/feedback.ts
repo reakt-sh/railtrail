@@ -9,7 +9,7 @@ import checkWithSchema from "../validate";
 const logger = logging.getLogger("api:feedback");
 
 apiRouter.get("/feedback/list/:year", authOperatorGuard, async (req, res) => {
-    const year = parseInt(req.params.year, 10);
+    const year = parseInt(req.params.year as string, 10);
     if (isNaN(year)) {
         res.status(400).send({ error: "Invalid year parameter" }).end();
         return;

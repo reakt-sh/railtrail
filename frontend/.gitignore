@@ -1,5 +1,6 @@
 # Project specific
 schema-gen/
+raillines-mirror
 runtime-environment.mobile.js
 
 # Node

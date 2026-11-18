@@ -1,13 +1,14 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
-        "baseUrl": "./",
+        "paths": {
+            "*": ["./*"]
+        },
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "sourceMap": false,
-        "downlevelIteration": true,
         "importHelpers": true,
         "outDir": "./dist",
         "declaration": false,
