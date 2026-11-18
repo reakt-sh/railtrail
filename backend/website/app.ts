@@ -50,6 +50,10 @@ app.use(helmet({
             upgradeInsecureRequests: [],
         },
     },
+    referrerPolicy: {
+        // This policicy is required to allow the map tiles to be loaded from OpenStreetMap.
+        policy: "strict-origin-when-cross-origin",
+    },
 }));
 
 if (!config.debug) {
