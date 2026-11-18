@@ -1,5 +1,15 @@
-import { Component, inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { MapComponent as LibreMapComponent, NgxMapLibreGLModule } from "@maplibre/ngx-maplibre-gl";
+import {
+    Component,
+    inject,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ChangeDetectionStrategy,
+} from "@angular/core";
+import {
+    MapComponent as LibreMapComponent,
+    NgxMapLibreGLModule,
+} from "@maplibre/ngx-maplibre-gl";
 import { Logger } from "loglevel";
 import { Map, StyleSpecification } from "maplibre-gl";
 import { RailLine } from "../../../schema-gen/railline";
@@ -12,11 +22,12 @@ import { RailLineService } from "./logic/rail-line.service";
     selector: "app-map",
     imports: [NgxMapLibreGLModule],
     templateUrl: "./map.component.html",
-    styleUrl: "./map.component.scss"
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: "./map.component.scss",
 })
 export class MapComponent implements OnInit, OnDestroy {
-
-    private readonly logger: Logger = inject(LoggingService).getLogger("map:component");
+    private readonly logger: Logger =
+        inject(LoggingService).getLogger("map:component");
     private readonly railLineService: RailLineService = inject(RailLineService);
     private readonly mapIconsService: MapIconsService = inject(MapIconsService);
     private readonly mapLogicService: MapLogicService = inject(MapLogicService);
@@ -28,24 +39,24 @@ export class MapComponent implements OnInit, OnDestroy {
     private map?: Map;
 
     readonly mapStyle: StyleSpecification = {
-        "version": 8,
-        "sources": {
-            "osm": {
-                "type": "raster",
-                "tiles": ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
-                "tileSize": 256,
-                "attribution": "&copy; OpenStreetMap Contributors",
-                "maxzoom": 20
-            }
+        version: 8,
+        sources: {
+            osm: {
+                type: "raster",
+                tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
+                tileSize: 256,
+                attribution: "&copy; OpenStreetMap Contributors",
+                maxzoom: 20,
+            },
         },
-        "glyphs": "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf", // FIXME
-        "layers": [
+        glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf", // FIXME
+        layers: [
             {
-                "id": "osm",
-                "type": "raster",
-                "source": "osm" // This must match the source key above
-            }
-        ]
+                id: "osm",
+                type: "raster",
+                source: "osm", // This must match the source key above
+            },
+        ],
     };
 
     ngOnInit() {
@@ -57,7 +68,7 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     private initMap(map: Map) {
-        this.map = map
+        this.map = map;
 
         this.mapIconsService.init(map);
 
@@ -75,7 +86,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
                 // Start to populate map
                 this.mapLogicService.start(map);
-            }
+            },
         });
     }
 }

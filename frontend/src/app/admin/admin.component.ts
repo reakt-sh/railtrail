@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { MyMaterialModule } from "../shared/my-material.module";
 
@@ -6,8 +6,7 @@ import { MyMaterialModule } from "../shared/my-material.module";
     selector: "app-admin",
     imports: [RouterLink, MyMaterialModule],
     templateUrl: "./admin.component.html",
-    styleUrl: "./admin.component.scss"
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: "./admin.component.scss",
 })
-export class AdminComponent {
-
-}
+export class AdminComponent {}
