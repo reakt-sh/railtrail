@@ -1,9 +1,9 @@
 prisma==0.15.*
-fastapi==0.128.*
-uvicorn[standard]==0.40.*
+fastapi==0.163.*
+uvicorn[standard]==0.54.*
 datamodel-code-generator==0.53.*
 jsonschema==4.26.*
-python-dateutil==2.9.*
-geojson==3.2.*
-shapely==2.1.*
+python-dateutil==4.0.*
+geojson==3.3.*
+shapely==2.2.*
 pyturf==0.6.*
